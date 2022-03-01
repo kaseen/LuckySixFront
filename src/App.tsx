@@ -1,17 +1,20 @@
-import {DAppProvider, Config, ChainId} from "@usedapp/core"
+import { Web3Provider } from "@ethersproject/providers";
+import { Web3ReactProvider } from "@web3-react/core";
 import {Header} from "./components/Header"
 import { Main } from "./components/Main";
 
-const config: Config = {
-  supportedChains: [ChainId.Kovan]
+
+const getLibrary = (provider) => {
+  return new Web3Provider(provider)
 }
+
 
 function App() {
   return (
-    <DAppProvider config={config}>
+    <Web3ReactProvider getLibrary={getLibrary}>
       <Header/>
       <Main/>
-    </DAppProvider>
+    </Web3ReactProvider>
   );
 }
 

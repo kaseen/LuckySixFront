@@ -1,5 +1,7 @@
-import {useEthers} from "@usedapp/core"
 import {Button, makeStyles} from "@material-ui/core"
+import {injected} from "./Connectors"
+import { useWeb3React } from "@web3-react/core"
+
 
 const useStyles = makeStyles(() => ({
     container: {
@@ -15,24 +17,40 @@ const useStyles = makeStyles(() => ({
     }
 }))
 
+
 export const Header = () => {
+
     const classes = useStyles()
 
-    const {account, activateBrowserWallet, deactivate} = useEthers()
+    const {active, activate, deactivate} = useWeb3React()
 
-    const isConnected = (account !== undefined)
+    async function connect(){
+        try{
+            await activate(injected)
+        }catch(ex){
+            console.log(ex)
+        }
+    }
+
+    async function disconnect(){
+        try{
+            await deactivate()
+        }catch(ex){
+            console.log(ex)
+        }
+    }
 
     return(
         <div>
             <div className={classes.container}>
                 {
-                    isConnected ? (
-                        <Button variant="contained" onClick={deactivate} className={classes.button}>
-                            Deactivate
+                    !active ? (
+                        <Button variant="contained" onClick={connect} className={classes.button}>
+                            Connect
                         </Button>
                     ) : (
-                        <Button variant="contained" onClick={activateBrowserWallet} className={classes.button}>
-                            Connect
+                        <Button variant="contained" onClick={disconnect} className={classes.button}>
+                            Deactivate
                         </Button>
                     )
                 }

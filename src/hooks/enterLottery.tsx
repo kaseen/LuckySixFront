@@ -1,23 +1,31 @@
-import {useContractFunction, useEthers} from "@usedapp/core"
+import {useWeb3React} from "@web3-react/core"
+import {ethers} from "ethers"
 import LuckySix from "../dependencies/LuckySix.json"
 import contractsMap from "../contractsMap.json"
-import {Contract, utils, constants} from "ethers"
+
 
 export const EnterLottery = () => {
-    const {chainId} = useEthers()
+
+    const {account, library} = useWeb3React()
+
     const {abi} = LuckySix
 
-    const luckySixAddress = chainId ? contractsMap[String(chainId)]["LuckySix"][0] : constants.AddressZero
-    const luckySixInterface = new utils.Interface(abi)
-    const luckySixContract = new Contract(luckySixAddress, luckySixInterface)
+    async function test(){
+        const signer = library.getSigner()
 
-    const {send: _sendEnterLottery, state: stateOfTransaction} = useContractFunction(luckySixContract, "startLottery")
+        // TODO: HARDKODOVAN 42 I POSLEDNJI 0
+        const contractAddress = contractsMap[42]["LuckySix"][0]
+        const options = {value: ethers.utils.parseEther("0.00069")}
+        const contract = new ethers.Contract(contractAddress, abi, signer)
 
-    const sendEnterLottery = (combination: Array<Number>) => {
-        return _sendEnterLottery(combination)
+        try{
+            console.log(await contract.enterLottery([1,2,3,4,5,6], options))
+        }catch(ex){
+            console.log(ex)
+        }
     }
 
-    return {sendEnterLottery}
+    return {test}
 }
 
 export default EnterLottery

@@ -1,6 +1,6 @@
 import {Button, makeStyles} from "@material-ui/core"
 import {injected} from "./Connectors"
-import { useWeb3React } from "@web3-react/core"
+import {useWeb3React} from "@web3-react/core"
 
 
 const useStyles = makeStyles(() => ({

@@ -1,6 +1,5 @@
 import {Box, Button, makeStyles, TextField} from "@material-ui/core"
-import {EnterLottery} from "../hooks/enterLottery"
- 
+import {EnterLottery} from "../hooks/hookMain"
 
 const useStyles = makeStyles(() => ({
     columnFlex: {
@@ -25,12 +24,12 @@ export const Main = () => {
 
     const classes = useStyles()
 
-    const fja = EnterLottery()
+    const hook = EnterLottery()
 
     let combination : Array<Number> = [-1,-1,-1,-1,-1,-1]
 
     const handleButton = () => {
-        fja.test()
+        hook._enterLottery()
     }
 
     //TODO: TIMER JEL STARTOVAN ILI SE RACUNA WINNER

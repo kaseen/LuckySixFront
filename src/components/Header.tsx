@@ -6,14 +6,14 @@ import {useWeb3React} from "@web3-react/core"
 const useStyles = makeStyles(() => ({
     container: {
         //padding: theme.spacing(6),
-        padding: "30px",
-        display: "flex",
-        border: "5px solid #ab003c",
-        justifyContent: "flex-end",
-        backgroundColor: "#7e57c2"
+        padding: '25px',
+        display: 'flex',
+        justifyContent: 'flex-end',
+        backgroundColor: '#F5F5F5'
     },
     button: {
-        backgroundColor: "#67b7f7"
+        backgroundColor: '#F8F8F8',
+        borderRadius: '5px'
     }
 }))
 

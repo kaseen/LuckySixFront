@@ -6,19 +6,19 @@ import contractsMap from "../contractsMap.json"
 
 export const EnterLottery = () => {
 
-    const {account, library} = useWeb3React()
+    const {library} = useWeb3React()
 
     const {abi} = LuckySix
 
-    async function _enterLottery(){
+    async function _enterLottery(list, value){
         const signer = library.getSigner()
         // TODO: HARDKODOVAN 42 I POSLEDNJI 0
         const contractAddress = contractsMap[42]["LuckySix"][0]
-        const options = {value: ethers.utils.parseEther("0.0000069")}
         const contract = new ethers.Contract(contractAddress, abi, signer)
+        const options = {value: ethers.utils.parseEther(value)}
 
         try{
-            console.log(await contract.enterLottery([1,2,3,4,5,6], options))
+            console.log(await contract.enterLottery(list, options))
         }catch(ex){
             console.log(ex)
         }

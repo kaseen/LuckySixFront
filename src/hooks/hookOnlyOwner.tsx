@@ -58,6 +58,17 @@ export const OnlyOwner = () => {
         }
     }
 
+    async function _getDrawnNumbers(){
+        const signer = library.getSigner()
+        const contractAddress = contractsMap[42]["LuckySix"][0]
+        const contract = new ethers.Contract(contractAddress, abi, signer)
+        try{
+            return await contract.getDrawnNumbers()
+        }catch(ex){
+            console.log(ex)
+        }
+    }
+
     async function _endLottery(){
         const signer = library.getSigner()
         const contractAddress = contractsMap[42]["LuckySix"][0]
@@ -84,7 +95,7 @@ export const OnlyOwner = () => {
         }
     }
 
-    return {_getState, _getBalance, _startLottery, _endLottery, _payout}
+    return {_getState, _getBalance, _startLottery, _endLottery, _payout, _getDrawnNumbers}
 }
 
 export default OnlyOwner

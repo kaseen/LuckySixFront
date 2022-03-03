@@ -1,12 +1,19 @@
 import {Box, Button, makeStyles, TextField} from "@material-ui/core"
 import {EnterLottery} from "../hooks/hookMain"
+import {OnlyOwner} from "../hooks/hookOnlyOwner"
+import {useEffect, useState} from "react"
 
 const useStyles = makeStyles(() => ({
     wrapper: {
         height: '580px',
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    timer: {
+        height: '50px',
+        backgroundColor: 'yellow'
     },
     box: {
         paddingTop: '55px',
@@ -42,15 +49,32 @@ export const Main = () => {
 
     const classes = useStyles()
 
-    const hook = EnterLottery()
+    const hookEnterLottery = EnterLottery()
+    const hookOnlyOwner = OnlyOwner()
 
     let combination : Array<Number> = [-1,-1,-1,-1,-1,-1]
 
-    let value;
+    const [drawnNumbers, setDrawnNumbers] = useState("")
+    const [value, setValue] = useState("")
+    const [render, setRender] = useState(true)
 
     const enterLottery = () => {
-        hook._enterLottery(combination, value)
+        hookEnterLottery._enterLottery(combination, value)
     }
+
+    async function showNumbers(){
+        const x = await hookOnlyOwner._getDrawnNumbers()
+        var string = ""
+        for (let index = 0; index < 35; index++) {
+            string += (x[index].toNumber()).toString() + " "
+        }
+        setDrawnNumbers(string)
+    }
+
+    useEffect(() => {
+        showNumbers()
+        setRender(true)
+      }, [render]);
 
     //TODO: TIMER JEL STARTOVAN ILI SE RACUNA WINNER
     //TODO: PLAY NE MOZE DA SE KLIKNE AKO NIJE VALIDAN INPUT U POLJA SA BROJEVIMA
@@ -74,7 +98,7 @@ export const Main = () => {
                 </section>
                 </Box>
                 <Box className={classes.rowFlex}>
-                    <TextField inputProps={{min: 0, style: { textAlign: 'center' }}} onChange={(v) => value = v.target.value}>
+                    <TextField inputProps={{min: 0, style: { textAlign: 'center' }}} onChange={(v) => setValue(v.target.value)}>
                         BLA BLA
                     </TextField>
                 </Box>
@@ -84,6 +108,12 @@ export const Main = () => {
                     </Button>
                 </Box>
             </Box>
+            <h1 className={classes.timer}>
+                <div>
+                {drawnNumbers}
+                </div>
+                <Button onClick={showNumbers}>LGALG</Button>
+            </h1>
         </div>
     )
 }

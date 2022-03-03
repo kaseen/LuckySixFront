@@ -13,6 +13,10 @@ export const EnterLottery = () => {
     async function _enterLottery(list, value){
         const signer = library.getSigner()
         // TODO: HARDKODOVAN 42 I POSLEDNJI 0
+
+        console.log(list)
+        console.log(value)
+
         const contractAddress = contractsMap[42]["LuckySix"][0]
         const contract = new ethers.Contract(contractAddress, abi, signer)
         const options = {value: ethers.utils.parseEther(value)}
@@ -20,6 +24,7 @@ export const EnterLottery = () => {
         try{
             console.log(await contract.enterLottery(list, options))
         }catch(ex){
+            console.log("FATAL")
             console.log(ex)
         }
     }

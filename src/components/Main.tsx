@@ -52,14 +52,19 @@ export const Main = () => {
     const hookEnterLottery = EnterLottery()
     const hookOnlyOwner = OnlyOwner()
 
-    let combination : Array<Number> = [-1,-1,-1,-1,-1,-1]
-
     const [drawnNumbers, setDrawnNumbers] = useState("")
     const [value, setValue] = useState("")
     const [render, setRender] = useState(true)
+    const [combination, setCombination] = useState([-1,-1,-1,-1,-1,-1])
 
     const enterLottery = () => {
         hookEnterLottery._enterLottery(combination, value)
+    }
+
+    const _setCombination = (i,v) => {
+        const tmp = combination
+        tmp[i] = v
+        setCombination(tmp)
     }
 
     async function showNumbers(){
@@ -74,7 +79,7 @@ export const Main = () => {
     useEffect(() => {
         showNumbers()
         setRender(true)
-      }, [render]);
+    }, [render]);
 
     //TODO: TIMER JEL STARTOVAN ILI SE RACUNA WINNER
     //TODO: PLAY NE MOZE DA SE KLIKNE AKO NIJE VALIDAN INPUT U POLJA SA BROJEVIMA
@@ -89,8 +94,8 @@ export const Main = () => {
                     (_, i) => 
                     <TextField
                         key={i}
-                        className={classes.inputNumbers} 
-                        onChange={(v) => combination[i] = Number(v.target.value)}
+                        className={classes.inputNumbers}
+                        onChange={(v) => _setCombination(i, Number(v.target.value))}
                         inputProps={{min: 0, style: { textAlign:'center'}}}
                         variant="outlined"
                     />

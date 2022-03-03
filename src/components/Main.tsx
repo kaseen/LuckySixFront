@@ -3,30 +3,39 @@ import {EnterLottery} from "../hooks/hookMain"
 import {OnlyOwner} from "../hooks/hookOnlyOwner"
 import {useEffect, useState} from "react"
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     wrapper: {
-        height: '580px',
+        paddingTop: '20px',
+        paddingBottom: '10%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center'
     },
-    timer: {
-        height: '50px',
-        backgroundColor: 'yellow'
+    h1: {
+        color: 'white',
+        textAlign: 'center',
+        padding: '20px',
+        fontSize: '50px'
     },
     box: {
         paddingTop: '55px',
         width: '500px',
-        height: '200px',
+        height: '220px',
         backgroundColor: '#F8F8F8',
-        border: '1.5px solid black'      
+        border: '1.5px solid black',
+        paddingBottom: '10px',
+        marginBottom: '30px'    
     },
     rowFlex:{
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
-        padding: '7px',
+        marginBottom: '35px'
+    },
+    timer: {
+        height: '35px',
+        backgroundColor: 'white'
     },
     inputNumbers: {
         width: 60,
@@ -69,11 +78,13 @@ export const Main = () => {
 
     async function showNumbers(){
         const x = await hookOnlyOwner._getDrawnNumbers()
-        var string = ""
-        for (let index = 0; index < 35; index++) {
-            string += (x[index].toNumber()).toString() + " "
+        if(x.length !== 0){
+            var string = ""
+            for (let index = 0; index < 35; index++) {
+                string += (x[index].toNumber()).toString() + " "
+            }
+            setDrawnNumbers(string)
         }
-        setDrawnNumbers(string)
     }
 
     useEffect(() => {
@@ -87,6 +98,9 @@ export const Main = () => {
     //TODO: POLJE ZACRVENI AKO NIJE VALIDAN INPUT
     return(
         <div className={classes.wrapper}>
+            <h2 className={classes.h1}>
+                Lucky Six 
+            </h2>
             <Box className={classes.box}>
                 <Box component="form" className={classes.rowFlex}>
                 <section>
@@ -117,7 +131,6 @@ export const Main = () => {
                 <div>
                 {drawnNumbers}
                 </div>
-                <Button onClick={showNumbers}>LGALG</Button>
             </h1>
         </div>
     )

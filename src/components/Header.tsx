@@ -9,7 +9,8 @@ const useStyles = makeStyles(() => ({
         padding: '25px',
         display: 'flex',
         justifyContent: 'flex-end',
-        backgroundColor: '#F5F5F5'
+        //backgroundColor: '#F5F5F5'
+        //border: "1px solid white"
     },
     button: {
         backgroundColor: '#F8F8F8',
@@ -45,7 +46,7 @@ export const Header = () => {
             <div className={classes.container}>
                 {
                     !active ? (
-                        <Button variant="contained" onClick={connect} className={classes.button}>
+                        <Button variant="contained" size="large" onClick={connect} className={classes.button}>
                             Connect
                         </Button>
                     ) : (

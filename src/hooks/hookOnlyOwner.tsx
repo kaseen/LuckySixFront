@@ -59,9 +59,9 @@ export const OnlyOwner = () => {
     }
 
     async function _getDrawnNumbers(){
-        const signer = library.getSigner()
         const contractAddress = contractsMap[42]["LuckySix"][0]
-        const contract = new ethers.Contract(contractAddress, abi, signer)
+        // TODO: HARDKODOVAN PROVIDER
+        const contract = new ethers.Contract(contractAddress, abi, ethers.getDefaultProvider("https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"))
         try{
             return await contract.getDrawnNumbers()
         }catch(ex){

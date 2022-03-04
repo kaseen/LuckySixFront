@@ -9,28 +9,6 @@ export const OnlyOwner = () => {
     const {library} = useWeb3React()
 
     const {abi} = LuckySix
-
-    async function _getState(){
-        const signer = library.getSigner()
-        const contractAddress = contractsMap[42]["LuckySix"][0]
-        const contract = new ethers.Contract(contractAddress, abi, signer)
-        try{
-            const x = Number(await contract.lottery_state())
-            switch(x){
-                case 0: 
-                    console.log("OPEN")
-                    break
-                case 1: 
-                    console.log("CLOSED")
-                    break
-                case 2:
-                    console.log("CALCULATING_WINNER")
-                    break
-            }
-        }catch(ex){
-            console.log(ex)
-        }
-    }
    
     async function _getBalance(){
         const signer = library.getSigner()
@@ -53,17 +31,6 @@ export const OnlyOwner = () => {
         try{
             await contract.startLottery()
             console.log("Lottery Started")
-        }catch(ex){
-            console.log(ex)
-        }
-    }
-
-    async function _getDrawnNumbers(){
-        const contractAddress = contractsMap[42]["LuckySix"][0]
-        // TODO: HARDKODOVAN PROVIDER
-        const contract = new ethers.Contract(contractAddress, abi, ethers.getDefaultProvider("https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"))
-        try{
-            return await contract.getDrawnNumbers()
         }catch(ex){
             console.log(ex)
         }
@@ -95,7 +62,7 @@ export const OnlyOwner = () => {
         }
     }
 
-    return {_getState, _getBalance, _startLottery, _endLottery, _payout, _getDrawnNumbers}
+    return {_getBalance, _startLottery, _endLottery, _payout}
 }
 
 export default OnlyOwner

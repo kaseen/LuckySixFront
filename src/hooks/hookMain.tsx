@@ -4,7 +4,7 @@ import LuckySix from "../dependencies/LuckySix.json"
 import contractsMap from "../contractsMap.json"
 
 
-export const EnterLottery = () => {
+export const PublicFunctions = () => {
 
     const {library} = useWeb3React()
 
@@ -26,7 +26,29 @@ export const EnterLottery = () => {
         }
     }
 
-    return {_enterLottery}
+    async function _getDrawnNumbers(){
+        const contractAddress = contractsMap[42]["LuckySix"][0]
+        // TODO: HARDKODOVAN PROVIDER
+        const contract = new ethers.Contract(contractAddress, abi, ethers.getDefaultProvider("https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"))
+        try{
+            return await contract.getDrawnNumbers()
+        }catch(ex){
+            console.log(ex)
+        }
+    }
+
+    async function _getState(){
+        const contractAddress = contractsMap[42]["LuckySix"][0]
+        // TODO: HARDKODOVAN PROVIDER
+        const contract = new ethers.Contract(contractAddress, abi, ethers.getDefaultProvider("https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"))
+        try{
+            return Number(await contract.lottery_state())
+        }catch(ex){
+            console.log(ex)
+        }
+    }
+
+    return {_enterLottery, _getDrawnNumbers, _getState}
 }
 
-export default EnterLottery
+export default PublicFunctions

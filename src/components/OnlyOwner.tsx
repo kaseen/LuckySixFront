@@ -30,7 +30,6 @@ export const Admin = () => {
                 account === "0x5E20Aee97eDa500FbdFD1F3F863318d2bfA51ef3" ?
                 (
                     <Box className={classes.wrapper}>
-                        <Button variant="outlined" size="small" onClick={() => hook._getState()}>GET STATE</Button>
                         <Button variant="outlined" size="small" onClick={() => hook._getBalance()}>GET BALANCE</Button>
                         <Button variant="outlined" size="small" onClick={() => hook._startLottery()}>START LOTTERY</Button>
                         <Button variant="outlined" size="small" onClick={() => hook._endLottery()}>END LOTTERY</Button>

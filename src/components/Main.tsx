@@ -1,11 +1,9 @@
 import {Box, Button, makeStyles, TextField} from "@material-ui/core"
-import {EnterLottery} from "../hooks/hookMain"
-import {OnlyOwner} from "../hooks/hookOnlyOwner"
+import {PublicFunctions} from "../hooks/hookMain"
 import {useEffect, useState} from "react"
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     wrapper: {
-        paddingTop: '20px',
         paddingBottom: '10%',
         display: 'flex',
         flexDirection: 'column',
@@ -20,12 +18,13 @@ const useStyles = makeStyles((theme) => ({
     },
     box: {
         paddingTop: '55px',
+        borderRadius: '10px',
         width: '500px',
-        height: '220px',
+        height: '270px',
         backgroundColor: '#F8F8F8',
         border: '1.5px solid black',
         paddingBottom: '10px',
-        marginBottom: '30px'    
+        marginBottom: '40px'    
     },
     rowFlex:{
         display: 'flex',
@@ -45,7 +44,6 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#FFFFFF',
         border: '1px solid black',  
         borderRadius: '10px',
-        fontWeight: 1000
     },
     button: {
         backgroundColor: '#FFFFFF',
@@ -58,16 +56,16 @@ export const Main = () => {
 
     const classes = useStyles()
 
-    const hookEnterLottery = EnterLottery()
-    const hookOnlyOwner = OnlyOwner()
+    const hook = PublicFunctions()
 
     const [drawnNumbers, setDrawnNumbers] = useState("")
     const [value, setValue] = useState("")
     const [render, setRender] = useState(true)
     const [combination, setCombination] = useState([-1,-1,-1,-1,-1,-1])
+    const [state, setState] = useState("")
 
     const enterLottery = () => {
-        hookEnterLottery._enterLottery(combination, value)
+        hook._enterLottery(combination, value)
     }
 
     const _setCombination = (i,v) => {
@@ -77,7 +75,7 @@ export const Main = () => {
     }
 
     async function showNumbers(){
-        const x = await hookOnlyOwner._getDrawnNumbers()
+        const x = await hook._getDrawnNumbers()
         if(x.length !== 0){
             var string = ""
             for (let index = 0; index < 35; index++) {
@@ -87,8 +85,25 @@ export const Main = () => {
         }
     }
 
+    async function showState() {
+        const x = await hook._getState()
+        switch(x){
+            case 0: 
+                setState("OPEN")
+                break
+            case 1: 
+                setState("CLOSED")
+                break
+            case 2:
+                setState("CALCULATING WINNER")
+                break
+        }
+    }
+
+    //TODO: NE RENDERUJE KAKO TREBA
     useEffect(() => {
         showNumbers()
+        showState()
         setRender(true)
     }, [render]);
 
@@ -102,6 +117,9 @@ export const Main = () => {
                 Lucky Six 
             </h2>
             <Box className={classes.box}>
+                <Box className={classes.rowFlex}>
+                    State: {state}
+                </Box>
                 <Box component="form" className={classes.rowFlex}>
                 <section>
                     {Array.from({ length: 6 }, 

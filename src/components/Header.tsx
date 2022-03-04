@@ -50,7 +50,7 @@ export const Header = () => {
                             Connect
                         </Button>
                     ) : (
-                        <Button variant="contained" onClick={disconnect} className={classes.button}>
+                        <Button variant="contained" size="large" onClick={disconnect} className={classes.button}>
                             Deactivate
                         </Button>
                     )

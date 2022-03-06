@@ -13,7 +13,7 @@ const useStyles = makeStyles(() => ({
     h1: {
         color: 'white',
         textAlign: 'center',
-        padding: '20px',
+        padding: '10px',
         fontSize: '50px'
     },
     box: {
@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
         backgroundColor: '#F8F8F8',
         border: '1.5px solid black',
         paddingBottom: '10px',
-        marginBottom: '40px'    
+        marginBottom: '60px'    
     },
     rowFlex:{
         display: 'flex',
@@ -32,9 +32,11 @@ const useStyles = makeStyles(() => ({
         justifyContent: 'center',
         marginBottom: '35px'
     },
-    timer: {
-        height: '35px',
-        backgroundColor: 'white'
+    lastDrawnNumbers: {
+        marginLeft: '10%',
+        marginRight: '10%',
+        backgroundColor: 'white',
+        fontSize: '30px',
     },
     inputNumbers: {
         width: 60,
@@ -61,17 +63,26 @@ export const Main = () => {
     const [drawnNumbers, setDrawnNumbers] = useState("")
     const [value, setValue] = useState("")
     const [render, setRender] = useState(true)
+    const [button, setButton] = useState(true)
     const [combination, setCombination] = useState([-1,-1,-1,-1,-1,-1])
+    const [input, setInput] = useState(["","","","","",""])
     const [state, setState] = useState("")
 
     const enterLottery = () => {
         hook._enterLottery(combination, value)
     }
 
-    const _setCombination = (i,v) => {
+    const _setCombination = (i, v) => {
         const tmp = combination
         tmp[i] = v
         setCombination(tmp)
+        render === true ? setRender(false) : setRender(true)
+    }
+
+    const _setInput = (i, v) => {
+        const tmp = input
+        tmp[i] = v
+        setInput(tmp)
     }
 
     async function showNumbers(){
@@ -100,17 +111,42 @@ export const Main = () => {
         }
     }
 
-    //TODO: NE RENDERUJE KAKO TREBA
+    //TODO: ISPITAJ JEL RENERUJE KAKO TREBA
     useEffect(() => {
         showNumbers()
         showState()
-        setRender(true)
-    }, [render]);
+    }, [render, state]);
 
-    //TODO: TIMER JEL STARTOVAN ILI SE RACUNA WINNER
-    //TODO: PLAY NE MOZE DA SE KLIKNE AKO NIJE VALIDAN INPUT U POLJA SA BROJEVIMA
-    //TODO: VALIDAN INPUT BROJ IZMEDJU 1-48 I SVI RAZLICITI
-    //TODO: POLJE ZACRVENI AKO NIJE VALIDAN INPUT
+    //TODO: TIMER 
+    //TODO: ALLDIFFERENT SVE ZACRVENI
+    
+    function allDifferent(){
+        for (let i = 0; i < 6; i++) {
+            for (let j = i + 1; j < 6; j++) {
+                if(combination[i] === combination[j])
+                    return false
+            }
+            if(input[i] === "" || combination[i] < 1 || combination[i] > 48)
+                return false
+        }
+        return true
+    }
+
+    function checkInput(i, v){
+        if(v === "")
+            return false
+        if(combination[i] < 1 || combination[i] > 48)
+            return true
+        return false
+    }
+
+    function checkButton(){
+        if(allDifferent())
+            setButton(false)
+        else
+            setButton(true)
+    }
+
     return(
         <div className={classes.wrapper}>
             <h2 className={classes.h1}>
@@ -127,7 +163,12 @@ export const Main = () => {
                     <TextField
                         key={i}
                         className={classes.inputNumbers}
-                        onChange={(v) => _setCombination(i, Number(v.target.value))}
+                        onChange={(v) => {
+                            _setCombination(i, Number(v.target.value))
+                            _setInput(i, v)
+                            checkButton()
+                        }}
+                        error={checkInput(i, input[i])}
                         inputProps={{min: 0, style: { textAlign:'center'}}}
                         variant="outlined"
                     />
@@ -135,21 +176,17 @@ export const Main = () => {
                 </section>
                 </Box>
                 <Box className={classes.rowFlex}>
-                    <TextField inputProps={{min: 0, style: { textAlign: 'center' }}} onChange={(v) => setValue(v.target.value)}>
-                        BLA BLA
-                    </TextField>
+                    <TextField inputProps={{min: 0, style: {textAlign: 'center'}}} onChange={(v) => setValue(v.target.value)}/>
                 </Box>
                 <Box className={classes.rowFlex}>
-                    <Button variant="outlined" size="large" onClick={enterLottery} className={classes.button}>
+                    <Button variant="outlined" disabled={button} size="large" onClick={enterLottery} className={classes.button}>
                         Play
                     </Button>
                 </Box>
             </Box>
-            <h1 className={classes.timer}>
-                <div>
+            <Box className={classes.lastDrawnNumbers}>
                 {drawnNumbers}
-                </div>
-            </h1>
+            </Box>
         </div>
     )
 }

@@ -13,13 +13,14 @@ export const PublicFunctions = () => {
 
     async function _enterLottery(list, value){
         const signer = library.getSigner()
-
         const contractAddress = contractsMap[Number(chainId)]["ContractAddress"]
         const contract = new ethers.Contract(contractAddress, abi, signer)
         const options = {value: ethers.utils.parseEther(value)}
 
         try{
-            console.log(await contract.enterLottery(list, options))
+            const tx = await contract.enterLottery(list, options)
+            const receipt = await tx.wait()
+            return receipt.status
         }catch(ex){
             console.log("FATAL")
             console.log(ex)

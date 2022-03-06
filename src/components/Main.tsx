@@ -70,8 +70,9 @@ export const Main = () => {
     const [input, setInput] = useState(["","","","","",""])
     const [state, setState] = useState("")
 
-    const enterLottery = () => {
-        hook._enterLottery(combination, value)
+    async function enterLottery(){
+        const status = await hook._enterLottery(combination, value)
+        console.log(status)
     }
 
     const _setCombination = (i, v) => {
@@ -119,9 +120,9 @@ export const Main = () => {
         showState()
     }, [render, state, chainId]);
 
+
     //TODO: TIMER 
     //TODO: ALLDIFFERENT SVE ZACRVENI
-    
     function allDifferent(){
         for (let i = 0; i < 6; i++) {
             for (let j = i + 1; j < 6; j++) {

@@ -1,4 +1,5 @@
 import {Box, Button, makeStyles, TextField} from "@material-ui/core"
+import {useWeb3React} from "@web3-react/core"
 import {PublicFunctions} from "../hooks/hookMain"
 import {useEffect, useState} from "react"
 
@@ -58,6 +59,7 @@ export const Main = () => {
 
     const classes = useStyles()
 
+    const {chainId} = useWeb3React()
     const hook = PublicFunctions()
 
     const [drawnNumbers, setDrawnNumbers] = useState("")
@@ -115,7 +117,7 @@ export const Main = () => {
     useEffect(() => {
         showNumbers()
         showState()
-    }, [render, state]);
+    }, [render, state, chainId]);
 
     //TODO: TIMER 
     //TODO: ALLDIFFERENT SVE ZACRVENI

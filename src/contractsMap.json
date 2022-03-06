@@ -1,12 +1,10 @@
 {
-    "42": {
-      "LuckySix": [
-        "0x18E70B13BBD21E9Bd15dcaF99c571C490F476F91"
-      ]
-    },
     "4": {
-      "LuckySix": [
-        "0x3D539A5B991A86B2E7b47816647C57A39627EDB0"
-      ]
+      "ContractAddress": "0x3D539A5B991A86B2E7b47816647C57A39627EDB0",
+      "Provider": "https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
+    },
+    "42": {
+      "ContractAddress": "0x18E70B13BBD21E9Bd15dcaF99c571C490F476F91",
+      "Provider": "https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
     }
 }

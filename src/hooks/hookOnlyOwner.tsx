@@ -6,15 +6,14 @@ import contractsMap from "../contractsMap.json"
 
 export const OnlyOwner = () => {
 
-    const {library} = useWeb3React()
+    const {library, chainId} = useWeb3React()
 
     const {abi} = LuckySix
-   
+
     async function _getBalance(){
         const signer = library.getSigner()
-        const contractAddress = contractsMap[42]["LuckySix"][0]
+        const contractAddress = contractsMap[Number(chainId)]["ContractAddress"]
         const contract = new ethers.Contract(contractAddress, abi, signer)
-
         try{
             console.log("ETH balance: " + await contract.getETHBalance() / 10 ** 18)
             console.log("LINK balance: " + await contract.getLINKBalance() / 10 ** 18)
@@ -25,7 +24,7 @@ export const OnlyOwner = () => {
     
     async function _startLottery(){
         const signer = library.getSigner()
-        const contractAddress = contractsMap[42]["LuckySix"][0]
+        const contractAddress = contractsMap[Number(chainId)]["ContractAddress"]
         const contract = new ethers.Contract(contractAddress, abi, signer)
 
         try{
@@ -38,7 +37,7 @@ export const OnlyOwner = () => {
 
     async function _endLottery(){
         const signer = library.getSigner()
-        const contractAddress = contractsMap[42]["LuckySix"][0]
+        const contractAddress = contractsMap[Number(chainId)]["ContractAddress"]
         const contract = new ethers.Contract(contractAddress, abi, signer)
 
         try{
@@ -51,7 +50,7 @@ export const OnlyOwner = () => {
 
     async function _payout(){
         const signer = library.getSigner()
-        const contractAddress = contractsMap[42]["LuckySix"][0]
+        const contractAddress = contractsMap[Number(chainId)]["ContractAddress"]
         const contract = new ethers.Contract(contractAddress, abi, signer)
 
         try{

@@ -5,12 +5,9 @@ import {useWeb3React} from "@web3-react/core"
 
 const useStyles = makeStyles(() => ({
     container: {
-        //padding: theme.spacing(6),
         padding: '25px',
         display: 'flex',
-        justifyContent: 'flex-end',
-        //backgroundColor: '#F5F5F5'
-        //border: "1px solid white"
+        justifyContent: 'flex-end'
     },
     button: {
         backgroundColor: '#F8F8F8',
@@ -27,6 +24,7 @@ export const Header = () => {
 
     async function connect(){
         try{
+            
             await activate(injected)
         }catch(ex){
             console.log(ex)

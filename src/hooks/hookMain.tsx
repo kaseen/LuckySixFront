@@ -3,18 +3,18 @@ import {ethers} from "ethers"
 import LuckySix from "../dependencies/LuckySix.json"
 import contractsMap from "../contractsMap.json"
 
+const defaultId = 42
 
 export const PublicFunctions = () => {
 
-    const {library} = useWeb3React()
+    const {library, chainId} = useWeb3React()
 
     const {abi} = LuckySix
 
     async function _enterLottery(list, value){
         const signer = library.getSigner()
-        // TODO: HARDKODOVAN 42 I POSLEDNJI 0
 
-        const contractAddress = contractsMap[42]["LuckySix"][0]
+        const contractAddress = contractsMap[Number(chainId)]["ContractAddress"]
         const contract = new ethers.Contract(contractAddress, abi, signer)
         const options = {value: ethers.utils.parseEther(value)}
 
@@ -27,9 +27,11 @@ export const PublicFunctions = () => {
     }
 
     async function _getDrawnNumbers(){
-        const contractAddress = contractsMap[42]["LuckySix"][0]
-        // TODO: HARDKODOVAN PROVIDER
-        const contract = new ethers.Contract(contractAddress, abi, ethers.getDefaultProvider("https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"))
+        const defaultChainId = typeof chainId === "undefined" ? defaultId : Number(chainId)
+        const contractAddress = contractsMap[defaultChainId]["ContractAddress"]
+        const provider = contractsMap[defaultChainId]["Provider"]
+        const contract = new ethers.Contract(contractAddress, abi, ethers.getDefaultProvider(provider))
+
         try{
             return await contract.getDrawnNumbers()
         }catch(ex){
@@ -38,9 +40,11 @@ export const PublicFunctions = () => {
     }
 
     async function _getState(){
-        const contractAddress = contractsMap[42]["LuckySix"][0]
-        // TODO: HARDKODOVAN PROVIDER
-        const contract = new ethers.Contract(contractAddress, abi, ethers.getDefaultProvider("https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"))
+        const defaultChainId = typeof chainId === "undefined" ? defaultId : Number(chainId)
+        const contractAddress = contractsMap[defaultChainId]["ContractAddress"]
+        const provider = contractsMap[defaultChainId]["Provider"]
+        const contract = new ethers.Contract(contractAddress, abi, ethers.getDefaultProvider(provider))
+        
         try{
             return Number(await contract.lottery_state())
         }catch(ex){

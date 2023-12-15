@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { LuckySixFunctions } from '../dependencies/luckysix';
+import { InputNumbers, PlayButton } from './UI';
 
 export const Body = () => {
 
@@ -13,6 +14,15 @@ export const Body = () => {
     const [isStarted, setIsStarted] = useState();
     const [lotteryState, setLotteryState] = useState();
 
+    // TODO: Desc
+    const [combination, _setCombination] = useState([0,0,0,0,0,0]);
+
+    const setCombination = (i, v) => {
+        const tmpCombination = combination;
+        tmpCombination[i] = v;
+        _setCombination(tmpCombination);
+    }
+
     useEffect(() => {
         const result = LuckySix.readPlatfromStates();
 
@@ -22,7 +32,12 @@ export const Body = () => {
         setDateStarted(result.dateStarted.toString());
         setIsStarted(result.isStarted);
         setLotteryState(result.lotteryState);
-    }, [LuckySix]);
+
+    }, [combination, LuckySix]);
+
+    const testFunc = () => {
+        console.log('Calling from UI.js');
+    }
 
     return (
         <>
@@ -32,6 +47,9 @@ export const Body = () => {
             <div>Date Started: {dateStarted}</div>
             <div>{isStarted}</div>
             <div>Lottery State: {lotteryState}</div>
+
+            <InputNumbers function={setCombination}/>
+            <PlayButton function={testFunc}/>
         </>
     )
 }

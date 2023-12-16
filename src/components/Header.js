@@ -13,15 +13,15 @@ export const Header = () => {
     // TODO
     if(isConnected)
         return (
-            <div>
+            <>
                 Connected to {(address.slice(0,4) + '...' + address.slice(38))}
                 <button onClick={() => disconnect()}>Disconnect</button>
-            </div>
+            </>
         )
     else
         return (
-            <div>
+            <>
                 <button onClick={() => connect()}>Connect Wallet</button>
-            </div>
+            </>
         )
 }

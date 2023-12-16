@@ -2,10 +2,7 @@ import { formatUnits } from 'viem';
 import LuckySixABI from '../abi.json';
 
 import {
-    useContractReads,
-    /*usePrepareContractWrite,
-    useContractWrite,
-    useWaitForTransaction*/
+    useContractReads
 } from 'wagmi';
 
 // TODO
@@ -86,7 +83,6 @@ export const LuckySixFunctions = () => {
             console.log('Error loading platfrom states.');
             console.error(e);
         }
-
     }
 
     return {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { LuckySixFunctions } from '../dependencies/luckysix';
-import { InputNumbers, PlayButton } from './UI';
+import { EtherField, InputNumbers, PlayLottery } from './UI';
 
 export const Body = () => {
 
@@ -14,8 +14,9 @@ export const Body = () => {
     const [isStarted, setIsStarted] = useState();
     const [lotteryState, setLotteryState] = useState();
 
-    // TODO: Desc
-    const [combination, _setCombination] = useState([0,0,0,0,0,0]);
+    // Values of ticket attributes that a user wants to play, with default values set to 0
+    const [combination, _setCombination] = useState([1,2,3,4,5,6]);
+    const [amountToPlay, setAmountToPlay] = useState(0.02);
 
     const setCombination = (i, v) => {
         const tmpCombination = combination;
@@ -33,11 +34,7 @@ export const Body = () => {
         setIsStarted(result.isStarted);
         setLotteryState(result.lotteryState);
 
-    }, [combination, LuckySix]);
-
-    const testFunc = () => {
-        console.log('Calling from UI.js');
-    }
+    }, [combination, amountToPlay, LuckySix]);
 
     return (
         <>
@@ -49,7 +46,8 @@ export const Body = () => {
             <div>Lottery State: {lotteryState}</div>
 
             <InputNumbers function={setCombination}/>
-            <PlayButton function={testFunc}/>
+            <EtherField function={setAmountToPlay} platfromFee={platfromFee}/>
+            <PlayLottery combination={combination} amountToPlay={amountToPlay}/>
         </>
     )
 }

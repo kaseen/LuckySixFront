@@ -20,7 +20,7 @@ export const Header = () => {
         justifyContent: 'space-between',
         alignItems: 'center',
 
-        border: '2px solid black',
+        border: '4px solid black',
         background: 'linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 0%, rgba(0,212,255,0.7) 100%)',
 
         fontFamily: 'Permanent Marker',
@@ -63,7 +63,6 @@ export const Header = () => {
                     <ButtonStyled variant='contained' size='large' onClick={() => connect()}>Connect Wallet</ButtonStyled>
                 }
             </ContainerItem>
-
         </Container>
     )
 }

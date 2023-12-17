@@ -27,12 +27,12 @@ export const InputNumbers = (props) => {
                     onChange={(v) => props.function(i, v.target.value)}
                     inputProps={{ min: 0, style: { textAlign: 'center' } }}
                     sx={{
+                        marginTop: '10px',
                         width: 60,
                         height: 56,
                         marginLeft: '5px',
                         marginRight: '5px',
-                        backgroundColor: '#FFFFFF',
-                        border: '1px solid black',
+                        border: '2px solid black',
                         borderRadius: '10px'
                     }}
                 />
@@ -48,7 +48,9 @@ export const EtherField = (props) => {
             inputProps={{ min: 0, style: { textAlign: 'center' }}}
             onChange={(v) => props.function(v.target.value)}
             sx={{
-                backgroundColor: '#FFFFFF'
+                border: '2px solid black',
+                borderRadius: '10px',
+                marginTop: '10px'
             }}
             helperText='value you want to play (fees included)'
         />
@@ -78,14 +80,18 @@ export const PlayLottery = (props) => {
     });
 
     const ButtonStyled = styled(Button)({
-        backgroundColor: '#FFFFFF',
-        borderRadius: '5px' 
+        backgroundColor: 'rgba(9,9,121,0.4)',
+        borderRadius: '5px',
+        border: '2px solid black',
+
+        marginTop: '10px',
+        marginBottom: '10px',
     });
  
     return (
         <>
             <ButtonStyled
-                variant='outlined'
+                variant='contained'
                 size='large'
                 disabled={!write || isLoading}
                 onClick={() => write?.()}

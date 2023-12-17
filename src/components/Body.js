@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { LuckySixFunctions } from '../dependencies/luckysix';
 import { EtherField, InputNumbers, PlayLottery } from './UI';
+import { Box } from '@mui/material';
 
 export const Body = () => {
 
@@ -37,7 +38,26 @@ export const Body = () => {
     }, [combination, amountToPlay, LuckySix]);
 
     return (
-        <>
+        <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            fontFamily: 'Ubuntu',
+
+            background: 'linear-gradient(120deg, #020024 0%, #090979 0%, #00d4ff 60%)',
+            borderRadius: '20px',
+            border: '4px solid black',
+
+            // Centering
+            position: 'absolute',
+            left: '35%',
+            right: '35%',
+            maxWidth: '30%',
+            marginTop: '120px',
+            padding: '10px',
+        }}>
+
             <div>Platform Fee: {platfromFee} ethers</div>
             <div>Round Duration: {roundDuration} seconds</div>
             <div>Round Number: {numberOfRound}</div>
@@ -48,6 +68,6 @@ export const Body = () => {
             <InputNumbers function={setCombination}/>
             <EtherField function={setAmountToPlay} platfromFee={platfromFee}/>
             <PlayLottery combination={combination} amountToPlay={amountToPlay}/>
-        </>
+        </Box>
     )
 }

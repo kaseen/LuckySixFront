@@ -13,15 +13,24 @@ export const Header = () => {
 
     const Container = styled(Box)({
         padding: '25px',
+        margin: '15px',
+        borderRadius: '20px',
+
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: '#FFFFFF'
+
+        border: '2px solid black',
+        background: 'linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 0%, rgba(0,212,255,0.7) 100%)',
+
+        fontFamily: 'Permanent Marker',
+        color: '#afbfff'
     });
 
     const ButtonStyled = styled(Button)({
-        backgroundColor: '#F8F8F8',
+        backgroundColor: 'rgba(9,9,121,0.4)',
         borderRadius: '5px',
+        border: '2px solid black',
     });
 
     const ContainerItem = styled(Box)({
@@ -31,16 +40,17 @@ export const Header = () => {
     return (
         <Container>
             <ContainerItem sx={{
-                fontSize: '100%',
+                fontSize: '150%',
             }}>
                 {isConnected && <>Connected to: {(address.slice(0,5) + '...' + address.slice(38))}</>}
             </ContainerItem>
 
             <ContainerItem sx={{ 
-                fontSize: '170%',
+                fontSize: '500%',
                 fontWeight: '1000',
-                textAlign: 'center'
-            }}>
+                textAlign: 'center',
+            }}
+            >
                 LUCKY SIX
             </ContainerItem>
 
@@ -48,9 +58,9 @@ export const Header = () => {
                 textAlign: 'right'
             }}>
                 {isConnected ? 
-                    <ButtonStyled onClick={() => disconnect()}>Disconnect</ButtonStyled>
+                    <ButtonStyled variant='contained' size='large' onClick={() => disconnect()}>Disconnect</ButtonStyled>
                         :
-                    <ButtonStyled onClick={() => connect()}>Connect Wallet</ButtonStyled>
+                    <ButtonStyled variant='contained' size='large' onClick={() => connect()}>Connect Wallet</ButtonStyled>
                 }
             </ContainerItem>
 

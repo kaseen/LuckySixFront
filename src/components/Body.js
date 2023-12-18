@@ -29,14 +29,18 @@ export const Body = () => {
     }
 
     useEffect(() => {
-        const result = LuckySix.readPlatfromStates();
+        try {
+            const result = LuckySix.readPlatfromStates();
 
-        setPlatfromFee(result.platfromFee);
-        setRoundDuration(result.roundDuration);
-        setNumberOfRound(result.numberOfRound);
-        setDateStarted(result.dateStarted.toString());
-        setIsStarted(result.isStarted);
-        setLotteryState(result.lotteryState);
+            setPlatfromFee(result.platfromFee);
+            setRoundDuration(result.roundDuration);
+            setNumberOfRound(result.numberOfRound);
+            setDateStarted(result.dateStarted.toString());
+            setIsStarted(result.isStarted);
+            setLotteryState(result.lotteryState);
+        } catch (e) {
+            console.log('Error loading platform states');
+        }
 
     }, [render, amountToPlay, LuckySix]);
 
@@ -70,7 +74,7 @@ export const Body = () => {
             <div>Lottery State: {lotteryState}</div>
 
             <InputNumbers function={setCombination}/>
-            <EtherField function={setAmountToPlay} platfromFee={platfromFee}/>
+            <EtherField function={setAmountToPlay}/>
             <PlayLottery combination={combination} amountToPlay={amountToPlay}/>
         </Box>
     )

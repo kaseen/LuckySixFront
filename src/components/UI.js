@@ -35,6 +35,7 @@ export const InputNumbers = (props) => {
                         border: '2px solid black',
                         borderRadius: '10px'
                     }}
+                    placeholder={i+1}
                 />
                 )
             }
@@ -53,6 +54,7 @@ export const EtherField = (props) => {
                 marginTop: '15px'
             }}
             helperText='value you want to play (fees included)'
+            placeholder='0.02'
         />
     )
 }
@@ -71,7 +73,7 @@ export const PlayLottery = (props) => {
         functionName: 'playTicket',
         args: [props.combination],
         value: parseUnits(`${props.amountToPlay}`, 18),
-        enabled: false
+        //enabled: false
     });
 
     const { data, write } = useContractWrite(config);

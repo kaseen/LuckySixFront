@@ -16,8 +16,8 @@ export const Body = () => {
     const [lotteryState, setLotteryState] = useState();
 
     // Values of ticket attributes that a user wants to play, with default values set to 0
-    const [combination, _setCombination] = useState([0,0,0,0,0,0]);
-    const [amountToPlay, setAmountToPlay] = useState(0);
+    const [combination, _setCombination] = useState([1,2,3,4,5,6]);
+    const [amountToPlay, setAmountToPlay] = useState(0.02);
     const [render, setRender] = useState(0);
 
     const setCombination = (i, v) => {

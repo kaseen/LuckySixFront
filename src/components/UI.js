@@ -1,4 +1,4 @@
-import { Button, TextField } from '@mui/material';
+import { Button, TextField, Box } from '@mui/material';
 import { styled } from '@mui/system';
 
 import {
@@ -27,7 +27,7 @@ export const InputNumbers = (props) => {
                     onChange={(v) => props.function(i, v.target.value)}
                     inputProps={{ min: 0, style: { textAlign: 'center' } }}
                     sx={{
-                        marginTop: '10px',
+                        marginTop: '15px',
                         width: 60,
                         height: 56,
                         marginLeft: '5px',
@@ -50,7 +50,7 @@ export const EtherField = (props) => {
             sx={{
                 border: '2px solid black',
                 borderRadius: '10px',
-                marginTop: '10px'
+                marginTop: '15px'
             }}
             helperText='value you want to play (fees included)'
         />
@@ -70,7 +70,8 @@ export const PlayLottery = (props) => {
         abi: LuckySixABI,
         functionName: 'playTicket',
         args: [props.combination],
-        value: parseUnits(`${props.amountToPlay}`, 18)
+        value: parseUnits(`${props.amountToPlay}`, 18),
+        enabled: false
     });
 
     const { data, write } = useContractWrite(config);
@@ -84,10 +85,21 @@ export const PlayLottery = (props) => {
         borderRadius: '5px',
         border: '2px solid black',
 
-        marginTop: '10px',
-        marginBottom: '10px',
+        marginTop: '15px',
+        marginBottom: '8px',
     });
- 
+
+    /**
+     * @dev To enhance error readability, we parse the error message by identifying a `Error` keyword. Subsequently,
+     *      we display the content situated between the keyword and the end of the error message.
+     */
+    const parseError = (error) => {
+        const keyword = 'Error: ';
+        const result = error.slice(error.search(keyword) + keyword.length);
+
+        return result.split('(')[0];
+    }
+
     return (
         <>
             <ButtonStyled
@@ -96,8 +108,10 @@ export const PlayLottery = (props) => {
                 disabled={!write || isLoading}
                 onClick={() => write?.()}
             >Play Lottery</ButtonStyled>
-            {isSuccess && <div> Successfully played a ticket! Tx hash: {data?.hash} </div>}
-            {isError && <div>Error: {error.message}</div>}
+            <Box sx={{ minHeight: '20px'}}>
+                {isSuccess && <div> Successfully played a ticket! Tx hash: {data?.hash} </div>}
+                {isError && <div>Error: {parseError(error.message)}</div>}
+            </Box>
         </>
     )
 }

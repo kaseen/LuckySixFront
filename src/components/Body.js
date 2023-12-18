@@ -16,13 +16,16 @@ export const Body = () => {
     const [lotteryState, setLotteryState] = useState();
 
     // Values of ticket attributes that a user wants to play, with default values set to 0
-    const [combination, _setCombination] = useState([1,2,3,4,5,6]);
-    const [amountToPlay, setAmountToPlay] = useState(0.02);
+    const [combination, _setCombination] = useState([0,0,0,0,0,0]);
+    const [amountToPlay, setAmountToPlay] = useState(0);
+    const [render, setRender] = useState(0);
 
     const setCombination = (i, v) => {
         const tmpCombination = combination;
         tmpCombination[i] = v;
         _setCombination(tmpCombination);
+
+        render === 0 ? setRender(1) : setRender(0);
     }
 
     useEffect(() => {
@@ -35,7 +38,7 @@ export const Body = () => {
         setIsStarted(result.isStarted);
         setLotteryState(result.lotteryState);
 
-    }, [combination, amountToPlay, LuckySix]);
+    }, [render, amountToPlay, LuckySix]);
 
     return (
         <Box sx={{
@@ -51,9 +54,10 @@ export const Body = () => {
 
             // Centering
             position: 'absolute',
-            left: '35%',
-            right: '35%',
-            maxWidth: '30%',
+            left: '34%',
+            right: '34%',
+            minWidth: '32%',
+            maxWidth: '32%',
             marginTop: '120px',
             padding: '10px',
         }}>

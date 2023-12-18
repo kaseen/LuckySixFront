@@ -15,8 +15,7 @@ const LuckySixContract = {
 
 export const LuckySixFunctions = () => {
 
-    // TODO: Handle isError & isLoading
-    const { data /*, isError, isLoading */ } = useContractReads({
+    const { data , isError, isLoading } = useContractReads({
         contracts: [
             {
                 ...LuckySixContract,
@@ -34,7 +33,8 @@ export const LuckySixFunctions = () => {
                 ...LuckySixContract,
                 functionName: 'lotteryState'    // Index 3
             }
-        ]
+        ],
+        watch: true
     });
 
     /**
@@ -53,7 +53,7 @@ export const LuckySixFunctions = () => {
             4: 'Closed'
         }
 
-        try {
+        if(!isError && !isLoading) {
 
             // TODO: Show the date in the user's current time zone
             const unixTimestamp = formatUnits(data[2].result[1], -1);
@@ -78,10 +78,6 @@ export const LuckySixFunctions = () => {
                 isStarted: data[2].result[2] ? 'Started' : 'Not started',
                 lotteryState: LOTTERY_STATE[formatUnits(data[3].result, -1)]            
             }
-
-        } catch (e) {
-            console.log('Error loading platfrom states.');
-            console.error(e);
         }
     }
 

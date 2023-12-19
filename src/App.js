@@ -6,8 +6,8 @@ import { LotteryPayout } from './components/LotteryPayout'
 function App() {
     return (
         <>
-            <Header/>
             <BrowserRouter>
+                <Header/>
                 <Routes>
                     <Route path='/' element={<LotteryEntry/>}/>
                     <Route path='/payout' element={<LotteryPayout/>}/>

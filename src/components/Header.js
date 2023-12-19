@@ -1,5 +1,6 @@
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { InjectedConnector } from 'wagmi/connectors/injected';
+import { Link } from 'react-router-dom';
 import { Box, Button } from '@mui/material';
 import { styled } from '@mui/system';
 
@@ -34,17 +35,12 @@ export const Header = () => {
     });
 
     const ContainerItem = styled(Box)({
-        minWidth: '20%'
+        minWidth: '15%',
+        fontSize: '150%'
     })
 
     return (
         <Container>
-            <ContainerItem sx={{
-                fontSize: '150%',
-            }}>
-                {isConnected && <>Connected to: {(address.slice(0,5) + '...' + address.slice(38))}</>}
-            </ContainerItem>
-
             <ContainerItem sx={{ 
                 fontSize: '500%',
                 fontWeight: '1000',
@@ -52,6 +48,20 @@ export const Header = () => {
             }}
             >
                 LUCKY SIX
+            </ContainerItem>
+
+            <ContainerItem>
+                {isConnected && <>Connected to: {(address.slice(0,5) + '...' + address.slice(38))}</>}
+            </ContainerItem>
+
+            <ContainerItem sx={{
+                textAlign: 'right'
+            }}>
+                <Link to='/'>LotteryEntry</Link>
+            </ContainerItem>
+
+            <ContainerItem>
+                <Link to='/payout'>LotteryEntry</Link>
             </ContainerItem>
 
             <ContainerItem sx={{

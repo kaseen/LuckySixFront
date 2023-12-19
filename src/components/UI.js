@@ -117,3 +117,38 @@ export const PlayLottery = ({ combination, amountToPlay }) => {
         </>
     )
 }
+
+/**
+ * @dev The styling for the primary component, which is revealed through routing, centers the component in
+ *      the middle of the screen. The margins on the sides are precisely calculated as (100% - width)/2.
+ */
+export const bodyContainerStyle = () => {
+
+    const width = '32%';
+    const height = '40%';
+    const padding = '15px';
+    const sides = `${(100 - width.match(/\d+/g))/2}%`
+
+    return {
+        minWidth: width,
+        maxWidth: width,
+        minHeight: height,
+        maxHeight: height,
+        padding: padding,
+        left: sides,
+        right: sides,
+
+        position: 'absolute',
+        marginTop: '120px',
+
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        fontFamily: 'Ubuntu',
+
+        background: 'linear-gradient(120deg, #020024 0%, #090979 0%, #00d4ff 60%)',
+        borderRadius: '20px',
+        border: '4px solid black',
+    };
+}

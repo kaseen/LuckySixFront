@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { LuckySixFunctions } from '../dependencies/luckysix';
-import { EtherField, InputNumbers, PlayLottery } from './UI';
+import { EtherField, InputNumbers, PlayLottery, bodyContainerStyle } from './UI';
 import { Box } from '@mui/material';
 
 export const LotteryEntry = () => {
@@ -45,27 +45,7 @@ export const LotteryEntry = () => {
     }, [render, amountToPlay, LuckySix]);
 
     return (
-        <Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            fontFamily: 'Ubuntu',
-
-            background: 'linear-gradient(120deg, #020024 0%, #090979 0%, #00d4ff 60%)',
-            borderRadius: '20px',
-            border: '4px solid black',
-
-            // Centering
-            position: 'absolute',
-            left: '34%',
-            right: '34%',
-            minWidth: '32%',
-            maxWidth: '32%',
-            marginTop: '120px',
-            padding: '10px',
-        }}>
-
+        <Box sx={bodyContainerStyle}>
             <div>Platform Fee: {platfromFee} ethers</div>
             <div>Round Duration: {roundDuration} seconds</div>
             <div>Round Number: {numberOfRound}</div>

@@ -1,7 +1,9 @@
 import { Button, TextField, Box } from '@mui/material';
+import { useState } from 'react';
 import { styled } from '@mui/system';
 
 import {
+    useContractRead,
     usePrepareContractWrite,
     useContractWrite,
     useWaitForTransaction
@@ -9,7 +11,50 @@ import {
 
 import { parseUnits } from 'viem';
 import LuckySixABI from '../abi.json';
-const contractAddress = '0x4153a9Ea482a8cCb1737662FF840def7E087A6c8';
+
+const LuckySixContract = {
+    address: '0x4153a9Ea482a8cCb1737662FF840def7E087A6c8',
+    abi: LuckySixABI
+}
+
+/**
+ * @dev The styling for the primary component, which is revealed through routing, centers the component in
+ *      the middle of the screen. The margins on the sides are precisely calculated as (100% - width)/2.
+ */
+export const bodyContainerStyle = () => {
+
+    const width = '32%';
+    const height = '40%';
+    const padding = '15px';
+    const sides = `${(100 - width.match(/\d+/g))/2}%`
+
+    return {
+        minWidth: width,
+        maxWidth: width,
+        minHeight: height,
+        maxHeight: height,
+        padding: padding,
+        left: sides,
+        right: sides,
+
+        position: 'absolute',
+        marginTop: '120px',
+
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        fontFamily: 'Ubuntu',
+
+        background: 'linear-gradient(120deg, #020024 0%, #090979 0%, #00d4ff 60%)',
+        borderRadius: '20px',
+        border: '4px solid black',
+    };
+}
+
+// =============================================================
+//                        LOTTERY ENTRY
+// =============================================================
 
 /**
  * @dev Creating an array of 6 text fields, each with a unique identifier, where the `combination`
@@ -68,7 +113,7 @@ export const EtherField = ({ function: setAmountToPlay }) => {
 export const PlayLottery = ({ combination, amountToPlay }) => {
 
     const { config, error, isError } = usePrepareContractWrite({
-        address: contractAddress,
+        address: LuckySixContract['address'],
         abi: LuckySixABI,
         functionName: 'playTicket',
         args: [combination],
@@ -118,37 +163,43 @@ export const PlayLottery = ({ combination, amountToPlay }) => {
     )
 }
 
+// =============================================================
+//                        LOTTERY PAYOUT
+// =============================================================
+
 /**
- * @dev The styling for the primary component, which is revealed through routing, centers the component in
- *      the middle of the screen. The margins on the sides are precisely calculated as (100% - width)/2.
+ * @dev This component invokes the `unpackResultForRound` function with the argument entered in the text
+ *      field. The text field is disabled during data fetching, and upon a successful response, the result
+ *      is stored in the numbersDrawn variable.
  */
-export const bodyContainerStyle = () => {
+export const ReadDrawnNumbers = ({ function: setRoundNumber, value: roundNumber }) => {
 
-    const width = '32%';
-    const height = '40%';
-    const padding = '15px';
-    const sides = `${(100 - width.match(/\d+/g))/2}%`
+    const [numbersDrawn, setNumbersDrawn] = useState([]);
 
-    return {
-        minWidth: width,
-        maxWidth: width,
-        minHeight: height,
-        maxHeight: height,
-        padding: padding,
-        left: sides,
-        right: sides,
+    const { isFetching, isLoading, refetch, isSuccess } = useContractRead({
+        ...LuckySixContract,
+        functionName: 'unpackResultForRound',
+        args: [`${roundNumber}`],
+        onSuccess(data) {
+            setNumbersDrawn(data);
+        },
+        onError(error) {
+            console.log('Error fetching drawn numbers', error);
+        },
+    });
 
-        position: 'absolute',
-        marginTop: '120px',
+    return (
+        <Box>
+            Number:
+            <TextField 
+                onChange={(v) => {
+                    setRoundNumber(v.target.value);
+                    refetch();  // TODO: await
+                }}
+                disabled={isLoading || isFetching}
+            />
+            {isSuccess && <div>{numbersDrawn.toString()}</div>}
+        </Box>
 
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        fontFamily: 'Ubuntu',
-
-        background: 'linear-gradient(120deg, #020024 0%, #090979 0%, #00d4ff 60%)',
-        borderRadius: '20px',
-        border: '4px solid black',
-    };
+    );
 }

@@ -57,11 +57,11 @@ export const Header = () => {
             <ContainerItem sx={{
                 textAlign: 'right'
             }}>
-                <Link to='/'>LotteryEntry</Link>
+                <Link to='/'>Lottery Entry</Link>
             </ContainerItem>
 
             <ContainerItem>
-                <Link to='/payout'>LotteryEntry</Link>
+                <Link to='/payout'>Lottery Payout</Link>
             </ContainerItem>
 
             <ContainerItem sx={{

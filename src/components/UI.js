@@ -16,7 +16,7 @@ const contractAddress = '0x4153a9Ea482a8cCb1737662FF840def7E087A6c8';
  *      variable from `Body.js` is updated with a function passed as a prop. This function changes
  *      the state of an array on any change in those fields.
  */
-export const InputNumbers = (props) => {
+export const InputNumbers = ({ function: setCombination }) => {
     return (
         <section>
             {
@@ -24,7 +24,7 @@ export const InputNumbers = (props) => {
                 (_, i) =>
                 <TextField
                     key={i}
-                    onChange={(v) => props.function(i, v.target.value)}
+                    onChange={(v) => setCombination(i, v.target.value)}
                     inputProps={{ min: 0, style: { textAlign: 'center' } }}
                     sx={{
                         marginTop: '15px',
@@ -35,7 +35,7 @@ export const InputNumbers = (props) => {
                         border: '2px solid black',
                         borderRadius: '10px'
                     }}
-                    placeholder={i+1}
+                    placeholder={`${i+1}`}
                 />
                 )
             }
@@ -43,11 +43,11 @@ export const InputNumbers = (props) => {
     )
 }
 
-export const EtherField = (props) => {
+export const EtherField = ({ function: setAmountToPlay }) => {
     return (
         <TextField
             inputProps={{ min: 0, style: { textAlign: 'center' }}}
-            onChange={(v) => props.function(v.target.value)}
+            onChange={(v) => setAmountToPlay(v.target.value)}
             sx={{
                 border: '2px solid black',
                 borderRadius: '10px',
@@ -65,14 +65,14 @@ export const EtherField = (props) => {
  *      the button is disabled during the transaction pending phase, displaying the transaction hash upon
  *      success. In case of an error, an error message is presented.
  */
-export const PlayLottery = (props) => {
+export const PlayLottery = ({ combination, amountToPlay }) => {
 
     const { config, error, isError } = usePrepareContractWrite({
         address: contractAddress,
         abi: LuckySixABI,
         functionName: 'playTicket',
-        args: [props.combination],
-        value: parseUnits(`${props.amountToPlay}`, 18),
+        args: [combination],
+        value: parseUnits(`${amountToPlay}`, 18),
         //enabled: false
     });
 

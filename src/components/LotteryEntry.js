@@ -3,7 +3,7 @@ import { LuckySixFunctions } from '../dependencies/luckysix';
 import { EtherField, InputNumbers, PlayLottery } from './UI';
 import { Box } from '@mui/material';
 
-export const Body = () => {
+export const LotteryEntry = () => {
 
     const LuckySix = LuckySixFunctions();
 
@@ -16,8 +16,8 @@ export const Body = () => {
     const [lotteryState, setLotteryState] = useState();
 
     // Values of ticket attributes that a user wants to play, with default values set to 0
-    const [combination, _setCombination] = useState([1,2,3,4,5,6]);
-    const [amountToPlay, setAmountToPlay] = useState(0.02);
+    const [combination, _setCombination] = useState(['1','2','3','4','5','6']);
+    const [amountToPlay, setAmountToPlay] = useState('0.02');
     const [render, setRender] = useState(0);
 
     const setCombination = (i, v) => {

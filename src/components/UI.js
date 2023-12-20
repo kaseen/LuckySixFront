@@ -1,4 +1,4 @@
-import { Button, TextField, Box } from '@mui/material';
+import { Button, TextField, Box, CircularProgress } from '@mui/material';
 import { useState } from 'react';
 import { styled } from '@mui/system';
 
@@ -9,7 +9,7 @@ import {
     useWaitForTransaction
 } from 'wagmi';
 
-import { parseUnits } from 'viem';
+import { formatUnits, parseUnits } from 'viem';
 import LuckySixABI from '../abi.json';
 
 const LuckySixContract = {
@@ -44,18 +44,19 @@ export const bodyContainerStyle = () => {
         flexDirection: 'column',
         justifyContent: 'space-between',
         alignItems: 'center',
-        fontFamily: 'Ubuntu',
 
         background: 'linear-gradient(120deg, #020024 0%, #090979 0%, #00d4ff 60%)',
         borderRadius: '20px',
         border: '4px solid black',
+
+        fontFamily: 'Ubuntu',
+        fontSize: '16px'
     };
 }
 
 // =============================================================
 //                        LOTTERY ENTRY
 // =============================================================
-
 /**
  * @dev Creating an array of 6 text fields, each with a unique identifier, where the `combination`
  *      variable from `Body.js` is updated with a function passed as a prop. This function changes
@@ -88,6 +89,9 @@ export const InputNumbers = ({ function: setCombination }) => {
     )
 }
 
+/**
+ * @dev This component assigns the `amountToPlay` to its parent component.
+ */
 export const EtherField = ({ function: setAmountToPlay }) => {
     return (
         <TextField
@@ -166,7 +170,6 @@ export const PlayLottery = ({ combination, amountToPlay }) => {
 // =============================================================
 //                        LOTTERY PAYOUT
 // =============================================================
-
 /**
  * @dev This component configures the `roundNumber` for the `LotteryPayout` component, and it is implicitly
  *      utilized by every subcomponent within the `LotteryPayout` component.
@@ -180,8 +183,7 @@ export const ReadRoundNumber = ({ function: setRoundNumber, value: roundNumber }
             maxWidth: size,
             maxHeight: size,
             minWidth: size,
-            maxWidth: size,
-
+            minHeight: size,
             color: 'black',
         }
     }
@@ -215,6 +217,7 @@ export const ReadRoundNumber = ({ function: setRoundNumber, value: roundNumber }
                     sx={miniButtonStyle}
                     onClick={() =>{
                         const x = Number(roundNumber) - 1;
+                        if(x < 0) return;
                         setRoundNumber(x);
                     }}
                 >{'▼'}</Button>
@@ -223,11 +226,24 @@ export const ReadRoundNumber = ({ function: setRoundNumber, value: roundNumber }
     );
 }
 
+/**
+ * @dev This component utilizes the `roundNumber` from its parent component, fetches the drawn numbers
+ *      for that specific round, and displays them in an array of text fields.
+ */
 export const DisplayDrawnNumbers = ({ roundNumber }) => {
 
-    const [numbersDrawn, setNumbersDrawn] = useState([]);
+    const [numbersDrawn, _setNumbersDrawn] = useState([]);
 
-    const { isFetching, isLoading, refetch, isSuccess } = useContractRead({
+    const setNumbersDrawn = (array) => {
+        const result = []
+
+        for(const x of array)
+            result.push(formatUnits(x, -1));
+
+        _setNumbersDrawn(result);
+    }
+
+    const { isFetching, isLoading } = useContractRead({
         ...LuckySixContract,
         functionName: 'unpackResultForRound',
         args: [`${roundNumber}`],
@@ -237,9 +253,35 @@ export const DisplayDrawnNumbers = ({ roundNumber }) => {
         onError(error) {
             console.log('Error fetching drawn numbers', error);
         },
+        //enabled: typeof roundNumber !== 'undefined'
     });
 
     return (
-        <><Box>{isSuccess && <div>{numbersDrawn.toString()}</div>}</Box></>
+        <Box>
+            Drawn numbers: {(isFetching || isLoading) && <CircularProgress size='16px' sx={{ color: 'black' }}/>}
+            <section>
+                {
+                    Array.from({ length: 35 },
+                    (_, i) =>
+                    <TextField
+                        key={i}
+                        inputProps={{ style: { textAlign: 'center', color: 'white' } }}
+                        sx={{
+                            width: 29,
+                            border: '2px solid black',
+                            borderRadius: '10px',
+                            '& .MuiInputBase-input.Mui-disabled': {
+                                WebkitTextFillColor: 'black',
+                            }
+                        }}
+                        value={`${numbersDrawn[i]}`}    // TODO
+                        size='small'
+                        variant='standard'
+                        disabled={true}
+                    />
+                    )
+                }
+            </section>
+        </Box>
     )
 }

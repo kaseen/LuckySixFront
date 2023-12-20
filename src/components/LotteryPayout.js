@@ -5,7 +5,6 @@ import { useState } from 'react';
 export const LotteryPayout = () => {
 
     const [roundNumber, setRoundNumber] = useState(0);  //TODO
-    
 
     return (
         <Box sx={bodyContainerStyle}>
@@ -18,10 +17,6 @@ export const LotteryPayout = () => {
                 roundNumber={roundNumber}
             />
 
-            <Box>
-                drawnNumbers:
-                <TextField></TextField>
-            </Box>
             <Box>
                 tickets:
                 <TextField></TextField>

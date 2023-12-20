@@ -6,7 +6,8 @@ import {
     useContractRead,
     usePrepareContractWrite,
     useContractWrite,
-    useWaitForTransaction
+    useWaitForTransaction,
+    useAccount
 } from 'wagmi';
 
 import { formatUnits, parseUnits } from 'viem';
@@ -174,7 +175,7 @@ export const PlayLottery = ({ combination, amountToPlay }) => {
  * @dev This component configures the `roundNumber` for the `LotteryPayout` component, and it is implicitly
  *      utilized by every subcomponent within the `LotteryPayout` component.
  */
-export const ReadRoundNumber = ({ function: setRoundNumber, value: roundNumber }) => {  
+export const PayoutSelectRound = ({ function: setRoundNumber, value: roundNumber }) => {  
 
     const miniButtonStyle = () => {
         const size = '20px';
@@ -230,7 +231,7 @@ export const ReadRoundNumber = ({ function: setRoundNumber, value: roundNumber }
  * @dev This component utilizes the `roundNumber` from its parent component, fetches the drawn numbers
  *      for that specific round, and displays them in an array of text fields.
  */
-export const DisplayDrawnNumbers = ({ roundNumber }) => {
+export const PayoutDisplayDrawnNumbers = ({ roundNumber }) => {
 
     const [numbersDrawn, _setNumbersDrawn] = useState([]);
 
@@ -283,5 +284,50 @@ export const DisplayDrawnNumbers = ({ roundNumber }) => {
                 }
             </section>
         </Box>
+    )
+}
+
+export const PayoutRedeem = ({ roundNumber }) => {
+
+    const { address, isConnected } = useAccount();
+    const [ticketsList, _setTicketsList] = useState([]);
+
+    const setTicketsList = (data) => {
+        const result = [];
+
+        for(const ticket of data) {
+            const combination = [];
+
+            for(let i=0; i<6; i++)
+                combination.push(formatUnits(ticket.combination[i], -1));
+
+            result.push({ 
+                bet: formatUnits(ticket.bet, 18),
+                combination: '[' + combination.toString() + ']',
+                redeemed: ticket.redeemed
+            })
+        }
+
+        _setTicketsList(result);
+    }
+
+    const { isFetching, isLoading } = useContractRead({
+        ...LuckySixContract,
+        functionName: isConnected ? 'getTicketsForRound' : '',
+        args: [`${roundNumber}`],
+        onSuccess(data) {
+            setTicketsList(data);
+        },
+        onError(error) {
+            console.log('Error fetching tickets', error);
+        },
+        account: address
+    });
+
+
+    return (
+        <>
+            Tickets: 
+        </>
     )
 }

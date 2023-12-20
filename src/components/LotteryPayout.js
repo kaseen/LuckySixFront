@@ -1,6 +1,10 @@
 import { Box, Button, TextField } from '@mui/material';
-import { bodyContainerStyle, ReadRoundNumber, DisplayDrawnNumbers } from './UI';
 import { useState } from 'react';
+import { PayoutSelectRound,
+    PayoutDisplayDrawnNumbers,
+    PayoutRedeem,
+    bodyContainerStyle
+} from './UI';
 
 export const LotteryPayout = () => {
 
@@ -8,19 +12,19 @@ export const LotteryPayout = () => {
 
     return (
         <Box sx={bodyContainerStyle}>
-            <ReadRoundNumber
+            <PayoutSelectRound
                 function={setRoundNumber}
                 value={roundNumber}
             />
 
-            <DisplayDrawnNumbers
+            <PayoutDisplayDrawnNumbers
                 roundNumber={roundNumber}
             />
 
-            <Box>
-                tickets:
-                <TextField></TextField>
-            </Box>
+            <PayoutRedeem
+                roundNumber={roundNumber}
+            />
+
             <Box><TextField></TextField> <Button>Redeem</Button></Box>
         </Box>
     )

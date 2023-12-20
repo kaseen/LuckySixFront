@@ -168,11 +168,62 @@ export const PlayLottery = ({ combination, amountToPlay }) => {
 // =============================================================
 
 /**
- * @dev This component invokes the `unpackResultForRound` function with the argument entered in the text
- *      field. The text field is disabled during data fetching, and upon a successful response, the result
- *      is stored in the numbersDrawn variable.
+ * @dev This component configures the `roundNumber` for the `LotteryPayout` component, and it is implicitly
+ *      utilized by every subcomponent within the `LotteryPayout` component.
  */
-export const ReadDrawnNumbers = ({ function: setRoundNumber, value: roundNumber }) => {
+export const ReadRoundNumber = ({ function: setRoundNumber, value: roundNumber }) => {  
+
+    const miniButtonStyle = () => {
+        const size = '20px';
+
+        return {
+            maxWidth: size,
+            maxHeight: size,
+            minWidth: size,
+            maxWidth: size,
+
+            color: 'black',
+        }
+    }
+
+    return (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            Round Number:
+            <TextField
+                inputProps={{ style: { textAlign: 'center' }}}
+                onChange={(v) => {
+                    setRoundNumber(v.target.value);
+                }}
+                sx={{
+                    width: 55,
+                    marginLeft: '5px',
+                    border: '2px solid black',
+                    borderRadius: '10px'
+                }}
+                value={roundNumber}
+                size='small'
+            />
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Button
+                    sx={miniButtonStyle}
+                    onClick={() =>{
+                        const x = Number(roundNumber) + 1;
+                        setRoundNumber(x);
+                    }}
+                >{'▲'}</Button>
+                <Button
+                    sx={miniButtonStyle}
+                    onClick={() =>{
+                        const x = Number(roundNumber) - 1;
+                        setRoundNumber(x);
+                    }}
+                >{'▼'}</Button>
+            </Box>
+        </Box>
+    );
+}
+
+export const DisplayDrawnNumbers = ({ roundNumber }) => {
 
     const [numbersDrawn, setNumbersDrawn] = useState([]);
 
@@ -189,17 +240,6 @@ export const ReadDrawnNumbers = ({ function: setRoundNumber, value: roundNumber 
     });
 
     return (
-        <Box>
-            Number:
-            <TextField 
-                onChange={(v) => {
-                    setRoundNumber(v.target.value);
-                    refetch();  // TODO: await
-                }}
-                disabled={isLoading || isFetching}
-            />
-            {isSuccess && <div>{numbersDrawn.toString()}</div>}
-        </Box>
-
-    );
+        <><Box>{isSuccess && <div>{numbersDrawn.toString()}</div>}</Box></>
+    )
 }

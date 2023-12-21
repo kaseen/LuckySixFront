@@ -19,6 +19,9 @@ const LuckySixContract = {
     abi: LuckySixABI
 }
 
+// TODO
+const currency = 'ETH'
+
 /**
  * @dev The styling for the primary component, which is revealed through routing, centers the component in
  *      the middle of the screen. The margins on the sides are precisely calculated as (100% - width)/2.
@@ -295,6 +298,9 @@ export const PayoutDisplayDrawnNumbers = ({ roundNumber }) => {
 export const PayoutRedeem = ({ roundNumber }) => {
 
     const { address, isConnected } = useAccount();
+
+    const [indexOfTicket, setIndexOfTicket] = useState(0);
+
     const [ticketsList, _setTicketsList] = useState([
         { id: 0, bet: '', combination: '', redeemed: '' },
         { id: 1, bet: '', combination: '', redeemed: '' },
@@ -303,6 +309,10 @@ export const PayoutRedeem = ({ roundNumber }) => {
         { id: 4, bet: '', combination: '', redeemed: '' }
     ]); // TODO: Remove
 
+    /**
+     * @dev This function updates the tickets list for the specified round with with given data. It's important
+     *      to note that both bet and combination are represented as string values.
+     */
     const setTicketsList = (data) => {
         const result = [];
 
@@ -314,7 +324,7 @@ export const PayoutRedeem = ({ roundNumber }) => {
 
             result.push({
                 id: index, 
-                bet: `${formatUnits(ticket.bet, 18)} ether`,
+                bet: `${formatUnits(ticket.bet, 18)} ${currency}`,
                 combination: '[' + combination.toString() + ']',
                 redeemed: ticket.redeemed
             })
@@ -328,6 +338,11 @@ export const PayoutRedeem = ({ roundNumber }) => {
         _setTicketsList(result);
     }
 
+    /**
+     * @dev This hook automatically fetches all the tickets played by the connected address and invokes the
+     *      `setTicketsList` function. It's worth noting that the hook is triggered automatically when the
+     *      wallet is connected.
+     */
     useContractRead({
         ...LuckySixContract,
         functionName: isConnected ? 'getTicketsForRound' : '',
@@ -341,24 +356,63 @@ export const PayoutRedeem = ({ roundNumber }) => {
         account: address
     });
 
-    const columns = [
-        { field: 'id', headerName: 'Ticket ID', width: 80, sortable: false },
-        { field: 'combination', headerName: 'Combination', width: 120,  sortable: false },
-        { field: 'bet', headerName: 'Bet', width: 120, sortable: false },
-        { field: 'redeemed', headerName: 'Redeemed', sortable: false }
-    ]
+    /**
+     * @dev This hook is designed to invoke the `getPayoutForTicket` function from the connected address.
+     */
+    const { config, isError, isLoading, isFetching } = usePrepareContractWrite({
+        ...LuckySixContract,
+        functionName: 'getPayoutForTicket',
+        args: [roundNumber, indexOfTicket],
+        enabled: true,
+        account: address
+    });
+    const { write } = useContractWrite(config);
 
-    /* TODO
-    const handle = (x, y, z) => {
-        console.log(x)
-        console.log(y)
-        console.log(z)
+    const handleRowClick = (dataRow) => {
+        if(dataRow.row.bet === '')
+            return;
+        setIndexOfTicket(dataRow.row.id);
     }
-    */
+
+    const returnItalicBox = (text) => {
+        return <Box sx={{ fontStyle: 'italic' }}>{text}</Box>
+    }
+
+    const commonProperties = { sortable: false, flex: 1, headerAlign: 'center', align: 'center' };
+    const columns = [
+        { ...commonProperties, field: 'id', headerName: 'TicketID', maxWidth: 75 },
+        { ...commonProperties, field: 'combination', headerName: 'Combination' },
+        { ...commonProperties, field: 'bet', headerName: 'Bet' },
+        { ...commonProperties, field: 'redeem', headerName: 'Redeem', 
+            renderCell: (params) => {
+                const row = params.row;
+
+                // Return if the row is empty
+                if(row.bet === '') return;
+
+                // Display a `CircularProgress` component if the ticket status is loading
+                if(isLoading || isFetching) return <CircularProgress size='16px' sx={{ color: 'black' }}/>;
+
+                // Show the message `redeemed` if the ticket has been redeemed
+                if(row.redeemed === true) return returnItalicBox('redeemed');
+
+                // Display `not redeemable` if the ticket cannot be redeemed
+                if(isError === true) return returnItalicBox('not redeemable')
+
+                const handleRedeem = () => {
+                    if(isError)
+                        alert('Ticket not valid');
+                    else
+                        write?.()
+                }
+                return <Button onClick={handleRedeem} variant='contained'>Redeem</Button>;
+            }
+        }
+    ]
 
     return (
         <Box sx={{ width: '100%', marginTop: '5px' }}>
-            {`Tickets list played in round ${roundNumber}:`} 
+            Your Tickets:
             <DataGrid
                 rows={ticketsList}
                 columns={columns}
@@ -366,12 +420,12 @@ export const PayoutRedeem = ({ roundNumber }) => {
                 disableColumnMenu
                 hideFooter={true}
                 rowCount={columns.length}
-                //onRowClick={handle} // TODO: Disable when loading
+                onRowClick={handleRowClick}
                 sx={{
                     '&.MuiDataGrid-root .MuiDataGrid-cell:focus-within': {
                         outline: 'none !important'
                     },
-                    marginTop: '8px'
+                    marginTop: '5px'
                 }}
             />
         </Box>

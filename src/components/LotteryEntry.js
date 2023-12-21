@@ -3,6 +3,9 @@ import { LuckySixFunctions } from '../dependencies/luckysix';
 import { EtherField, InputNumbers, PlayLottery, bodyContainerStyle } from './UI';
 import { Box } from '@mui/material';
 
+// TODO
+const currency = 'ETH'
+
 export const LotteryEntry = () => {
 
     const LuckySix = LuckySixFunctions();
@@ -46,7 +49,7 @@ export const LotteryEntry = () => {
 
     return (
         <Box sx={bodyContainerStyle}>
-            <div>Platform Fee: {platfromFee} ethers</div>
+            <div>Platform Fee: {platfromFee} {currency}</div>
             <div>Round Duration: {roundDuration} seconds</div>
             <div>Round Number: {numberOfRound}</div>
             <div>Date Started: {dateStarted}</div>

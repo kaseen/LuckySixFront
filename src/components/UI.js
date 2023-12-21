@@ -1,4 +1,5 @@
 import { Button, TextField, Box, CircularProgress } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid'
 import { useState } from 'react';
 import { styled } from '@mui/system';
 
@@ -287,31 +288,47 @@ export const PayoutDisplayDrawnNumbers = ({ roundNumber }) => {
     )
 }
 
+/**
+ * @dev This component retrieves and presents ticket information for the connected user in the specified
+ *      `roundNumber` from its parent component, displaying the data in a table format.
+ */
 export const PayoutRedeem = ({ roundNumber }) => {
 
     const { address, isConnected } = useAccount();
-    const [ticketsList, _setTicketsList] = useState([]);
+    const [ticketsList, _setTicketsList] = useState([
+        { id: 0, bet: '', combination: '', redeemed: '' },
+        { id: 1, bet: '', combination: '', redeemed: '' },
+        { id: 2, bet: '', combination: '', redeemed: '' },
+        { id: 3, bet: '', combination: '', redeemed: '' },
+        { id: 4, bet: '', combination: '', redeemed: '' }
+    ]); // TODO: Remove
 
     const setTicketsList = (data) => {
         const result = [];
 
-        for(const ticket of data) {
+        for(const [ index, ticket] of data.entries()) {
             const combination = [];
 
             for(let i=0; i<6; i++)
                 combination.push(formatUnits(ticket.combination[i], -1));
 
-            result.push({ 
-                bet: formatUnits(ticket.bet, 18),
+            result.push({
+                id: index, 
+                bet: `${formatUnits(ticket.bet, 18)} ether`,
                 combination: '[' + combination.toString() + ']',
                 redeemed: ticket.redeemed
             })
         }
 
+        // TODO: Remove
+        while(result.length < 5){
+            result.push({ id: result.length, bet: '', combination: '', redeemed: '' })
+        }
+
         _setTicketsList(result);
     }
 
-    const { isFetching, isLoading } = useContractRead({
+    useContractRead({
         ...LuckySixContract,
         functionName: isConnected ? 'getTicketsForRound' : '',
         args: [`${roundNumber}`],
@@ -324,10 +341,39 @@ export const PayoutRedeem = ({ roundNumber }) => {
         account: address
     });
 
+    const columns = [
+        { field: 'id', headerName: 'Ticket ID', width: 80, sortable: false },
+        { field: 'combination', headerName: 'Combination', width: 120,  sortable: false },
+        { field: 'bet', headerName: 'Bet', width: 120, sortable: false },
+        { field: 'redeemed', headerName: 'Redeemed', sortable: false }
+    ]
+
+    /* TODO
+    const handle = (x, y, z) => {
+        console.log(x)
+        console.log(y)
+        console.log(z)
+    }
+    */
 
     return (
-        <>
-            Tickets: 
-        </>
+        <Box sx={{ width: '100%', marginTop: '5px' }}>
+            {`Tickets list played in round ${roundNumber}:`} 
+            <DataGrid
+                rows={ticketsList}
+                columns={columns}
+                rowHeight={28}
+                disableColumnMenu
+                hideFooter={true}
+                rowCount={columns.length}
+                //onRowClick={handle} // TODO: Disable when loading
+                sx={{
+                    '&.MuiDataGrid-root .MuiDataGrid-cell:focus-within': {
+                        outline: 'none !important'
+                    },
+                    marginTop: '8px'
+                }}
+            />
+        </Box>
     )
 }

@@ -1,4 +1,4 @@
-import { Box, Button, TextField } from '@mui/material';
+import { Box } from '@mui/material';
 import { useState } from 'react';
 import { PayoutSelectRound,
     PayoutDisplayDrawnNumbers,
@@ -17,15 +17,8 @@ export const LotteryPayout = () => {
                 value={roundNumber}
             />
 
-            <PayoutDisplayDrawnNumbers
-                roundNumber={roundNumber}
-            />
-
-            <PayoutRedeem
-                roundNumber={roundNumber}
-            />
-
-            <Box><TextField></TextField> <Button>Redeem</Button></Box>
+            <PayoutDisplayDrawnNumbers roundNumber={roundNumber}/>
+            <PayoutRedeem roundNumber={roundNumber}/>
         </Box>
     )
 }

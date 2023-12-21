@@ -1,6 +1,7 @@
 import { Box } from '@mui/material';
 import { useState } from 'react';
-import { PayoutSelectRound,
+import { 
+    PayoutSelectRound,
     PayoutDisplayDrawnNumbers,
     PayoutRedeem,
     bodyContainerStyle
@@ -12,11 +13,7 @@ export const LotteryPayout = () => {
 
     return (
         <Box sx={bodyContainerStyle}>
-            <PayoutSelectRound
-                function={setRoundNumber}
-                value={roundNumber}
-            />
-
+            <PayoutSelectRound function={setRoundNumber} value={roundNumber}/>
             <PayoutDisplayDrawnNumbers roundNumber={roundNumber}/>
             <PayoutRedeem roundNumber={roundNumber}/>
         </Box>

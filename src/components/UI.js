@@ -5,6 +5,7 @@ import { styled } from '@mui/system';
 
 import {
     useContractRead,
+    useContractReads,
     usePrepareContractWrite,
     useContractWrite,
     useWaitForTransaction,
@@ -29,8 +30,8 @@ const currency = 'ETH'
 export const bodyContainerStyle = () => {
 
     const width = '32%';
-    const height = '40%';
-    const padding = '15px';
+    const height = '42%';
+    const padding = '10px';
     const sides = `${(100 - width.match(/\d+/g))/2}%`
 
     return {
@@ -50,7 +51,7 @@ export const bodyContainerStyle = () => {
         justifyContent: 'space-between',
         alignItems: 'center',
 
-        background: 'linear-gradient(120deg, #020024 0%, #090979 0%, #00d4ff 60%)',
+        background: 'linear-gradient(300deg, #020024 0%, #090979 0%, #00d4ff 60%)',
         borderRadius: '20px',
         border: '4px solid black',
 
@@ -63,11 +64,114 @@ export const bodyContainerStyle = () => {
 //                        LOTTERY ENTRY
 // =============================================================
 /**
- * @dev Creating an array of 6 text fields, each with a unique identifier, where the `combination`
- *      variable from `Body.js` is updated with a function passed as a prop. This function changes
- *      the state of an array on any change in those fields.
+ * @dev This component retrieves the current state of the lottery, displaying information such as the current 
+ *      platform fee, round number, lottery status, and the start time if the lottery has begun.
  */
-export const InputNumbers = ({ function: setCombination }) => {
+export const EntryDisplayInfo = () => {
+    /**
+     * @dev The lottery states are defined in `github.com/kaseen/LuckySix/src/interfaces/ILuckySix.sol`.
+     */
+    const LOTTERY_STATE = {
+        0: 'Ready',
+        1: 'Started',
+        2: 'Calculating',
+        3: 'Drawing',
+        4: 'Closed'
+    }
+
+    /**
+     * @dev This hooks reads the current lottery states and returns them to the body to be rendered.
+     */
+    const { data , isError, isLoading } = useContractReads({
+        contracts: [
+            {
+                ...LuckySixContract,
+                functionName: 'platformFee'     // Index 0
+            },
+            {
+                ...LuckySixContract,
+                functionName: 'roundDuration'   // Index 1
+            },
+            {
+                ...LuckySixContract,
+                functionName: 'roundInfo'       // Index 2
+            },
+            {
+                ...LuckySixContract,
+                functionName: 'lotteryState'    // Index 3
+            }
+        ],
+        watch: true
+    });
+
+    const boxStyle = () => {
+        return {
+            width: '50%',
+            paddingBottom: '8px',
+            borderBottom: '3px solid black'
+        }
+    }
+
+    return (
+        <Box sx={{
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            marginBottom: '8px',
+            fontSize: '18px'
+        }}>
+            <Box sx={boxStyle}>
+                <Box>Platform fee: {
+                    (!isError || isLoading) ? 
+                        `${formatUnits(data[0].result, 18)} ${currency}` : 
+                        <CircularProgress size='16px' sx={{ color: 'black' }}/>
+                }</Box>
+                <Box>Round Number: {
+                    (!isError || isLoading) ? 
+                    `${formatUnits(data[2].result[0], -1)}` : 
+                    <CircularProgress size='16px' sx={{ color: 'black' }}/>
+                }</Box>
+            </Box>
+
+            <Box sx={boxStyle}>
+                <Box>Lottery State: {
+                    (!isError || isLoading) ? 
+                    `${LOTTERY_STATE[formatUnits(data[3].result, -1)] }` : 
+                    <CircularProgress size='16px' sx={{ color: 'black' }}/>
+                }</Box>
+                <Box>Round ends: {
+                    (!isError || isLoading) ? 
+                    (() => {
+                        if(LOTTERY_STATE[formatUnits(data[3].result, -1)] !== 'Started')
+                            return 'Not started'
+
+                        const roundDuration = formatUnits(data[1].result, -1);
+                        const unixTimestamp = formatUnits(data[2].result[1], -1);
+                        const dateStarted = new Date((unixTimestamp + roundDuration) * 1000);
+                        const formatter = new Intl.DateTimeFormat(
+                            'en-GB', {
+                                /*day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',*/
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit',
+                                hourCycle: 'h23'
+                            });
+                        return formatter.format(dateStarted);
+                    })() : 
+                    <CircularProgress size='16px' sx={{ color: 'black' }}/>
+                }</Box>
+            </Box>
+        </Box>
+    )
+}
+/**
+ * @dev This component generates an array of 6 text fields, each with a distinct identifier. It updates
+ *      the `combination` variable from the parent component using a function passed as a prop. The function
+ *      modifies the state of the array whenever there is a change in any of those fields.
+ */
+export const EntryInputNumbers = ({ function: setCombination }) => {
     return (
         <section>
             {
@@ -97,7 +201,7 @@ export const InputNumbers = ({ function: setCombination }) => {
 /**
  * @dev This component assigns the `amountToPlay` to its parent component.
  */
-export const EtherField = ({ function: setAmountToPlay }) => {
+export const EntryEtherField = ({ function: setAmountToPlay }) => {
     return (
         <TextField
             inputProps={{ min: 0, style: { textAlign: 'center' }}}
@@ -114,12 +218,12 @@ export const EtherField = ({ function: setAmountToPlay }) => {
 }
 
 /**
- * @dev The `props` argument encompasses the `combination` and `amountToPlay` variables from `Body.js`.
- *      It's worth noting that the button is only clickable when the wallet is connected. Additionally,
- *      the button is disabled during the transaction pending phase, displaying the transaction hash upon
- *      success. In case of an error, an error message is presented.
+ * @dev This component participates in the lottery using the `combinatio`n and `amountToPlay` variables
+ *      inherited from the parent component. It's worth noting that the button is only clickable when the
+ *      wallet is connected. Additionally, the button is disabled during the transaction pending phase,
+ *      displaying the transaction hash upon success. In case of an error, an error message is presented.
  */
-export const PlayLottery = ({ combination, amountToPlay }) => {
+export const EntryPlayLottery = ({ combination, amountToPlay }) => {
 
     const { config, error, isError } = usePrepareContractWrite({
         address: LuckySixContract['address'],

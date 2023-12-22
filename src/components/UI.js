@@ -68,6 +68,12 @@ export const bodyContainerStyle = () => {
  *      platform fee, round number, lottery status, and the start time if the lottery has begun.
  */
 export const EntryDisplayInfo = () => {
+
+    const [platfromFee, setPlatfromFee] = useState();
+    const [numberOfRound, setNumberOfRound] = useState();
+    const [lotteryState, setLotteryState] = useState();
+    const [dateStarted, setDateStarted] = useState();
+
     /**
      * @dev The lottery states are defined in `github.com/kaseen/LuckySix/src/interfaces/ILuckySix.sol`.
      */
@@ -82,7 +88,7 @@ export const EntryDisplayInfo = () => {
     /**
      * @dev This hooks reads the current lottery states and returns them to the body to be rendered.
      */
-    const { data , isError, isLoading } = useContractReads({
+    useContractReads({
         contracts: [
             {
                 ...LuckySixContract,
@@ -101,6 +107,31 @@ export const EntryDisplayInfo = () => {
                 functionName: 'lotteryState'    // Index 3
             }
         ],
+        onSuccess(data) {
+            const roundDuration = formatUnits(data[1].result, -1);
+            const startedTimestamp = formatUnits(data[2].result[1], -1);
+
+            setPlatfromFee(formatUnits(data[0].result, 18));
+            setNumberOfRound(formatUnits(data[2].result[0], -1));
+            setLotteryState(formatUnits(data[3].result, -1));
+
+            console.log(startedTimestamp)
+            console.log(roundDuration)
+
+            const dateStarted = new Date((Number(startedTimestamp) + Number(roundDuration)) * 1000);
+            const formatter = new Intl.DateTimeFormat(
+                'en-GB', {
+                    /*day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',*/
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hourCycle: 'h23'
+                });
+
+            setDateStarted(formatter.format(dateStarted));
+        },
         watch: true
     });
 
@@ -112,6 +143,10 @@ export const EntryDisplayInfo = () => {
         }
     }
 
+    const showInfoOrProgress = (variable, textOnSuccess) => {
+        return typeof variable !== 'undefined' ? textOnSuccess : <CircularProgress size='16px' sx={{ color: 'black' }}/>
+    }
+
     return (
         <Box sx={{
             width: '100%',
@@ -121,47 +156,15 @@ export const EntryDisplayInfo = () => {
             fontSize: '18px'
         }}>
             <Box sx={boxStyle}>
-                <Box>Platform fee: {
-                    (!isError || isLoading) ? 
-                        `${formatUnits(data[0].result, 18)} ${currency}` : 
-                        <CircularProgress size='16px' sx={{ color: 'black' }}/>
-                }</Box>
-                <Box>Round Number: {
-                    (!isError || isLoading) ? 
-                    `${formatUnits(data[2].result[0], -1)}` : 
-                    <CircularProgress size='16px' sx={{ color: 'black' }}/>
-                }</Box>
+                <Box>Platform fee: {showInfoOrProgress(platfromFee, `${platfromFee} ${currency}`)}</Box>
+                <Box>Round Number: {showInfoOrProgress(numberOfRound, `${numberOfRound}`)}</Box>
             </Box>
 
             <Box sx={boxStyle}>
-                <Box>Lottery State: {
-                    (!isError || isLoading) ? 
-                    `${LOTTERY_STATE[formatUnits(data[3].result, -1)] }` : 
-                    <CircularProgress size='16px' sx={{ color: 'black' }}/>
-                }</Box>
-                <Box>Round ends: {
-                    (!isError || isLoading) ? 
-                    (() => {
-                        if(LOTTERY_STATE[formatUnits(data[3].result, -1)] !== 'Started')
-                            return 'Not started'
-
-                        const roundDuration = formatUnits(data[1].result, -1);
-                        const unixTimestamp = formatUnits(data[2].result[1], -1);
-                        const dateStarted = new Date((unixTimestamp + roundDuration) * 1000);
-                        const formatter = new Intl.DateTimeFormat(
-                            'en-GB', {
-                                /*day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',*/
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                second: '2-digit',
-                                hourCycle: 'h23'
-                            });
-                        return formatter.format(dateStarted);
-                    })() : 
-                    <CircularProgress size='16px' sx={{ color: 'black' }}/>
-                }</Box>
+                <Box>Lottery State: {showInfoOrProgress(lotteryState, `${LOTTERY_STATE[lotteryState]}`)}</Box>
+                <Box>Round ends: {showInfoOrProgress(lotteryState, 
+                    LOTTERY_STATE[lotteryState] === 'Started' ? `${dateStarted}` : ''
+                )}</Box>
             </Box>
         </Box>
     )

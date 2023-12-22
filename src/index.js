@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 
-// TODO: Polygon, Mumbai, Alchemy
+// TODO: Polygon, Mumbai, Alchemy   import { localhost } from 'wagmi/chains'
 import { WagmiConfig, createConfig, sepolia } from 'wagmi';
 import { createPublicClient, http } from 'viem';
 

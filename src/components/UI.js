@@ -16,6 +16,8 @@ import { formatUnits, parseUnits } from 'viem';
 import LuckySixABI from '../abi.json';
 
 const LuckySixContract = {
+    // localhost: 0x8ce361602B935680E8DeC218b820ff5056BeB7af
+    // sepolia: 0x4153a9Ea482a8cCb1737662FF840def7E087A6c8
     address: '0x4153a9Ea482a8cCb1737662FF840def7E087A6c8',
     abi: LuckySixABI
 }
@@ -114,9 +116,6 @@ export const EntryDisplayInfo = () => {
             setPlatfromFee(formatUnits(data[0].result, 18));
             setNumberOfRound(formatUnits(data[2].result[0], -1));
             setLotteryState(formatUnits(data[3].result, -1));
-
-            console.log(startedTimestamp)
-            console.log(roundDuration)
 
             const dateStarted = new Date((Number(startedTimestamp) + Number(roundDuration)) * 1000);
             const formatter = new Intl.DateTimeFormat(
@@ -247,8 +246,6 @@ export const EntryPlayLottery = ({ combination, amountToPlay }) => {
         backgroundColor: 'rgba(9,9,121,0.4)',
         borderRadius: '5px',
         border: '2px solid black',
-
-        marginTop: '15px',
         marginBottom: '8px',
     });
 
@@ -264,18 +261,23 @@ export const EntryPlayLottery = ({ combination, amountToPlay }) => {
     }
 
     return (
-        <>
+        <Box sx={{ 
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            height: '100px'
+        }}>
             <ButtonStyled
                 variant='contained'
                 size='large'
                 disabled={!write || isLoading}
                 onClick={() => write?.()}
             >Play Lottery</ButtonStyled>
-            <Box sx={{ minHeight: '20px'}}>
+            <Box>
                 {isSuccess && <div> Successfully played a ticket! Tx hash: {data?.hash} </div>}
                 {isError && <div>Error: {parseError(error.message)}</div>}
             </Box>
-        </>
+        </Box>
     )
 }
 

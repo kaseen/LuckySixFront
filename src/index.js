@@ -3,18 +3,29 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 
-// TODO: Polygon, Mumbai, Alchemy   import { localhost } from 'wagmi/chains'
-import { WagmiConfig, createConfig, sepolia } from 'wagmi';
-import { createPublicClient, http } from 'viem';
+import { WagmiConfig, configureChains, createConfig } from 'wagmi';
+import { sepolia, polygonMumbai, localhost } from 'wagmi/chains';
+import { publicProvider } from 'wagmi/providers/public';
+import { InjectedConnector } from 'wagmi/connectors/injected';
 
-// Wagmi config
+const { chains, publicClient } = configureChains(
+    [sepolia, polygonMumbai, localhost],
+    [publicProvider()]
+);
+
 const config = createConfig({
     autoConnect: true,
-    publicClient: createPublicClient({
-        chain: sepolia,
-        transport: http()
-    })
-})
+    connectors: [
+        new InjectedConnector({ 
+            chains,
+            options: {
+                name: 'Injected',
+                shimDisconnect: true
+            }
+        })
+    ],
+    publicClient
+});
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

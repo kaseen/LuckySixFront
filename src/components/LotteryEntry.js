@@ -5,7 +5,8 @@ import {
     EntryEtherField,
     EntryInputNumbers,
     EntryPlayLottery,
-    bodyContainerStyle
+    bodyContainerStyle,
+    Test
 } from './UI';
 
 export const LotteryEntry = () => {
@@ -25,10 +26,14 @@ export const LotteryEntry = () => {
 
     return (
         <Box sx={bodyContainerStyle}>
-            <EntryDisplayInfo/>
-            <EntryInputNumbers function={setCombination}/>
-            <EntryEtherField function={setAmountToPlay}/>
-            <EntryPlayLottery combination={combination} amountToPlay={amountToPlay}/>
+            <Test/>
         </Box>
     )
 }
+
+/*
+<EntryDisplayInfo networkId={networkId}/>
+<EntryInputNumbers function={setCombination}/>
+<EntryEtherField function={setAmountToPlay}/>
+<EntryPlayLottery combination={combination} amountToPlay={amountToPlay}/>
+*/

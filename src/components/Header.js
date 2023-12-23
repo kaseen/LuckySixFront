@@ -1,16 +1,16 @@
-import { useAccount, useConnect, useDisconnect } from 'wagmi';
-import { InjectedConnector } from 'wagmi/connectors/injected';
+import { useAccount, useConnect, useDisconnect, useNetwork } from 'wagmi';
 import { Link } from 'react-router-dom';
 import { Box, Button } from '@mui/material';
 import { styled } from '@mui/system';
 
 export const Header = () => {
 
+    const { connect, connectors } = useConnect();
+    const connector = connectors[0];
+    
     const { address, isConnected } = useAccount();
-    const { connect } = useConnect({
-        connector: new InjectedConnector()
-    });
     const { disconnect } = useDisconnect();
+    const { chain } = useNetwork();
 
     const Container = styled(Box)({
         padding: '25px',
@@ -51,7 +51,8 @@ export const Header = () => {
             </ContainerItem>
 
             <ContainerItem>
-                {isConnected && <>Connected to: {(address.slice(0,5) + '...' + address.slice(38))}</>}
+                <Box>{chain && <div>Network: {chain.name}</div>}</Box>
+                <Box>{isConnected && <>Connected to: {(address.slice(0,5) + '...' + address.slice(38))}</>}</Box>
             </ContainerItem>
 
             <ContainerItem sx={{
@@ -70,7 +71,7 @@ export const Header = () => {
                 {isConnected ? 
                     <ButtonStyled variant='contained' size='large' onClick={() => disconnect()}>Disconnect</ButtonStyled>
                         :
-                    <ButtonStyled variant='contained' size='large' onClick={() => connect()}>Connect Wallet</ButtonStyled>
+                    <ButtonStyled variant='contained' size='large' onClick={() => connect({ connector })}>Connect Wallet</ButtonStyled>
                 }
             </ContainerItem>
         </Container>

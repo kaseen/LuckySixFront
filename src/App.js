@@ -12,7 +12,7 @@ function App() {
 
     useEffect(() => {
         switchNetwork?.(chain.id);
-    }, [switchNetwork])
+    }, [chain, switchNetwork])
 
     return (
         <>

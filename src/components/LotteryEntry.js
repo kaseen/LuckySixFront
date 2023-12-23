@@ -26,7 +26,7 @@ export const LotteryEntry = () => {
 
     return (
         <Box sx={bodyContainerStyle}>
-            <Test/>
+            <EntryDisplayInfo/>
         </Box>
     )
 }

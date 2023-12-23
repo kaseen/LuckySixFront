@@ -1,7 +1,6 @@
 import { Button, TextField, Box, CircularProgress } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid'
-import { useEffect, useState } from 'react';
-import { InjectedConnector } from 'wagmi/connectors/injected';
+import { useState } from 'react';
 import { styled } from '@mui/system';
 
 import {
@@ -11,8 +10,6 @@ import {
     useContractWrite,
     useWaitForTransaction,
     useAccount,
-    useSwitchNetwork,
-    useConnect,
     useNetwork
 } from 'wagmi';
 
@@ -29,6 +26,18 @@ const LuckySixContract = {
 
 // TODO
 const currency = 'ETH'
+
+/**
+ * @dev This function, given the `chain` as an argument, returns the lottery address if the lottery exists
+ *      on that chain.
+ */
+const getContractAddress = (chain) => {
+    if(chain === undefined)
+        return ''
+    if(Contracts(chain.id) === undefined)
+        return ''
+    return Contracts(chain.id).address;
+}
 
 /**
  * @dev The styling for the primary component, which is revealed through routing, centers the component in
@@ -71,39 +80,19 @@ export const bodyContainerStyle = () => {
 //                        LOTTERY ENTRY
 // =============================================================
 /**
- * @dev This component retrieves the current state of the lottery, displaying information such as the current 
- *      platform fee, round number, lottery status, and the start time if the lottery has begun.
+ * @dev This component checks the current connection status. In case of an error, it displays an error message.
+ *      If everything is correct, it shows the state of the lottery on the connected network, presenting information
+ *      such as the current platform fee, round number, lottery status, and the start time if the lottery has begun.
  */
-export const EntryDisplayInfo = ({ networkId }) => {
-/*
-    console.log('==================')
-    console.log('networkId', networkId)
-    console.log(Contracts(networkId))
-    console.log('==================')*/
+export const EntryDisplayInfo = () => {
 
-    //console.log(typeof Contracts(networkId) !== undefined ? Contracts(networkId) : '')
+    const { chain } = useNetwork();
+    const contractAddress = getContractAddress();
 
     const [platfromFee, setPlatfromFee] = useState();
     const [numberOfRound, setNumberOfRound] = useState();
     const [lotteryState, setLotteryState] = useState();
     const [dateStarted, setDateStarted] = useState();
-
-    const enableHook = networkId !== undefined;
-
-    /*
-    useEffect(() => {
-
-    }, [networkId])
-    */
-
-    //const LuckySixContract = Contracts(networkId);
-
-    /*const LuckySixContract = {
-        // localhost: 0x8ce361602B935680E8DeC218b820ff5056BeB7af
-        // sepolia: 0x4153a9Ea482a8cCb1737662FF840def7E087A6c8
-        address: Contracts(networkId).address,
-        abi: LuckySixABI
-    }*/
 
     /**
      * @dev The lottery states are defined in `github.com/kaseen/LuckySix/src/interfaces/ILuckySix.sol`.
@@ -120,56 +109,29 @@ export const EntryDisplayInfo = ({ networkId }) => {
      * @dev This hooks reads the current lottery states and returns them to the body to be rendered.
      */
     useContractReads({
-        /*contracts: [
-            {
-                ...LuckySixContract,
-                functionName: 'platformFee'     // Index 0
-            },
-            {
-                ...LuckySixContract,
-                functionName: 'roundDuration'   // Index 1
-            },
-            {
-                address: !enableHook ? '' : Contracts(networkId).address,
-                abi: LuckySixABI,
-                functionName: 'roundInfo',
-                chainId: networkId              // Index 2
-            },
-            {
-                ...LuckySixContract,
-                functionName: 'lotteryState'    // Index 3
-            }
-        ],*/
         contracts: [
             {
-                address: '0x8ce361602B935680E8DeC218b820ff5056BeB7af',
+                address: contractAddress,
                 abi: LuckySixABI,
-                functionName: 'platformFee',
-                chainId: networkId
+                functionName: 'platformFee',        // Index 0
             },
             {
-                address: !enableHook ? '' : Contracts(networkId).address,
+                address: contractAddress,
                 abi: LuckySixABI,
-                functionName: 'roundDuration',
-                chainId: networkId
+                functionName: 'roundDuration',      // Index 1
             },
             {
-                address: !enableHook ? '' : Contracts(networkId).address,
+                address: contractAddress,
                 abi: LuckySixABI,
-                functionName: 'roundInfo',
-                chainId: networkId              // Index 2
+                functionName: 'roundInfo',          // Index 2
             },
             {
-                address: !enableHook ? '' : Contracts(networkId).address,
+                address: contractAddress,
                 abi: LuckySixABI,
-                functionName: 'lotteryState',
-                chainId: networkId
+                functionName: 'lotteryState',       // Index 3
             }
         ],
         onSuccess(data) {
-            console.log(Contracts(networkId))
-            console.log(data)
-
             const roundDuration = formatUnits(data[1].result, -1);
             const startedTimestamp = formatUnits(data[2].result[1], -1);
 
@@ -191,7 +153,6 @@ export const EntryDisplayInfo = ({ networkId }) => {
 
             setDateStarted(formatter.format(dateStarted));
         },
-        enabled: enableHook,
         watch: true
     });
 
@@ -207,6 +168,16 @@ export const EntryDisplayInfo = ({ networkId }) => {
         }
     }
 
+    const errorStyle = () => {
+        const parentStyle = boxStyle();
+        parentStyle.display = 'flex';
+        parentStyle.justifyContent = 'center';
+        parentStyle.alignItems = 'center';
+        parentStyle.fontSize = '20px';
+
+        return parentStyle;
+    }
+
     const miniBoxStyle = () => {
         return {
             width: '50%',
@@ -218,9 +189,17 @@ export const EntryDisplayInfo = ({ networkId }) => {
         return typeof variable !== 'undefined' ? textOnSuccess : <CircularProgress size='16px' sx={{ color: 'black' }}/>
     }
 
-    if(networkId === undefined)
-        return <Box sx={boxStyle}>
+    /**
+     * @dev If the wallet is not connected, display the first message. If the lottery does not exist on
+     *      the connected chain, show the second message.
+     */
+    if(chain === undefined)
+        return <Box sx={errorStyle}>
             Please connect to the network to view the lottery state!
+        </Box>
+    else if(Contracts(chain.id) === undefined)
+        return <Box sx={errorStyle}>
+            Lottery doesn't exist on this network!
         </Box>
 
     return (

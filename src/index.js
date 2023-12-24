@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 
-import { WagmiConfig, configureChains, createConfig } from 'wagmi';
+import { WagmiConfig, configureChains, createConfig, createStorage } from 'wagmi';
 import { sepolia, polygonMumbai, localhost } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 import { InjectedConnector } from 'wagmi/connectors/injected';
@@ -12,6 +12,15 @@ const { chains, publicClient } = configureChains(
     [sepolia, polygonMumbai, localhost],
     [publicProvider()]
 );
+
+const storage = createStorage({
+    storage: {
+        getItem: (_key) => '',
+        setItem: (_key, _value) => null,
+        removeItem: (_key) => null
+    }
+})
+
 
 const config = createConfig({
     autoConnect: true,
@@ -24,7 +33,8 @@ const config = createConfig({
             }
         })
     ],
-    publicClient
+    publicClient,
+    storage
 });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

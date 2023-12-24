@@ -14,8 +14,8 @@ import {
 } from 'wagmi';
 
 import { formatUnits, parseUnits } from 'viem';
-import LuckySixABI from '../abi.json';
 import { Contracts } from '../dependencies/contracts'
+import LuckySixABI from '../dependencies/abi.json';
 
 /**
  * @dev This function, given the `chain` as an argument, returns the lottery info on that chain.

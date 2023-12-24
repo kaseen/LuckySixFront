@@ -231,7 +231,7 @@ export const EntryInputNumbers = ({ function: setCombination }) => {
                         border: '2px solid black',
                         borderRadius: '10px'
                     }}
-                    placeholder={`${i+1}`}
+                    //placeholder={`${i+1}`}
                 />
                 )
             }
@@ -253,7 +253,7 @@ export const EntryEtherField = ({ function: setAmountToPlay }) => {
                 marginTop: '15px'
             }}
             helperText='value you want to play (fees included)'
-            placeholder='0.02'
+            //placeholder='0.02'
         />
     )
 }
@@ -264,7 +264,7 @@ export const EntryEtherField = ({ function: setAmountToPlay }) => {
  *      wallet is connected. Additionally, the button is disabled during the transaction pending phase,
  *      displaying the transaction hash upon success. In case of an error, an error message is presented.
  */
-export const EntryPlayLottery = ({ combination, amountToPlay }) => {
+export const EntryPlayLottery = ({ combination, amountToPlay, validInput }) => {
 
     const { chain } = useNetwork();
     const contractInfo = getContractInfo(chain);
@@ -275,7 +275,7 @@ export const EntryPlayLottery = ({ combination, amountToPlay }) => {
         functionName: 'playTicket',
         args: [combination],
         value: parseUnits(`${amountToPlay}`, 18),
-        //enabled: false
+        enabled: validInput
     });
 
     const { data, write } = useContractWrite(config);
@@ -486,6 +486,9 @@ export const PayoutRedeem = ({ roundNumber }) => {
      *      to note that both bet and combination are represented as string values.
      */
     const setTicketsList = (data) => {
+        if(data.length < indexOfTicket)
+            setIndexOfTicket('');
+
         const result = [];
 
         for(const [ index, ticket] of data.entries()) {
@@ -538,16 +541,10 @@ export const PayoutRedeem = ({ roundNumber }) => {
         abi: LuckySixABI,
         functionName: 'getPayoutForTicket',
         args: [roundNumber, indexOfTicket !== undefined ? indexOfTicket : 0],
-        enabled: roundNumber !== '' && indexOfTicket !== '',
+        enabled: roundNumber !== '' && indexOfTicket !== '' && ticketsList[indexOfTicket].id !== '',
         account: address
     });
     const { write } = useContractWrite(config);
-
-    const handleRowClick = (dataRow) => {
-        if(dataRow.row.bet === '')
-            return;
-        setIndexOfTicket(dataRow.row.id);
-    }
 
     const returnItalicBox = (text) => {
         return <Box sx={{ fontStyle: 'italic', color: 'white' }}>{text}</Box>
@@ -598,7 +595,7 @@ export const PayoutRedeem = ({ roundNumber }) => {
                 disableColumnMenu
                 hideFooter={true}
                 count={ticketsList.length}
-                onRowClick={handleRowClick}
+                onRowClick={dataRow => setIndexOfTicket(dataRow.row.id)}
                 
                 sx={{
                     '&.MuiDataGrid-root .MuiDataGrid-cell:focus-within': {

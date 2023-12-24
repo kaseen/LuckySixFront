@@ -17,13 +17,6 @@ import { formatUnits, parseUnits } from 'viem';
 import LuckySixABI from '../abi.json';
 import { Contracts } from '../dependencies/contracts'
 
-const LuckySixContract = {
-    // localhost: 0x8ce361602B935680E8DeC218b820ff5056BeB7af
-    // sepolia: 0x4153a9Ea482a8cCb1737662FF840def7E087A6c8
-    address: '0x4153a9Ea482a8cCb1737662FF840def7E087A6c8',
-    abi: LuckySixABI
-}
-
 // TODO
 const currency = 'ETH'
 
@@ -87,7 +80,7 @@ export const bodyContainerStyle = () => {
 export const EntryDisplayInfo = () => {
 
     const { chain } = useNetwork();
-    const contractAddress = getContractAddress();
+    const contractAddress = getContractAddress(chain);
 
     const [platfromFee, setPlatfromFee] = useState();
     const [numberOfRound, setNumberOfRound] = useState();
@@ -277,8 +270,11 @@ export const EntryEtherField = ({ function: setAmountToPlay }) => {
  */
 export const EntryPlayLottery = ({ combination, amountToPlay }) => {
 
+    const { chain } = useNetwork();
+    const contractAddress = getContractAddress(chain);
+
     const { config, error, isError } = usePrepareContractWrite({
-        address: LuckySixContract['address'],
+        address: contractAddress,
         abi: LuckySixABI,
         functionName: 'playTicket',
         args: [combination],
@@ -296,7 +292,7 @@ export const EntryPlayLottery = ({ combination, amountToPlay }) => {
         backgroundColor: 'rgba(9,9,121,0.4)',
         borderRadius: '5px',
         border: '2px solid black',
-        marginBottom: '8px',
+        marginBottom: '10px',
     });
 
     /**
@@ -396,6 +392,9 @@ export const PayoutSelectRound = ({ function: setRoundNumber, value: roundNumber
  */
 export const PayoutDisplayDrawnNumbers = ({ roundNumber }) => {
 
+    const { chain } = useNetwork();
+    const contractAddress = getContractAddress(chain);
+
     const [numbersDrawn, _setNumbersDrawn] = useState([]);
 
     const setNumbersDrawn = (array) => {
@@ -408,7 +407,8 @@ export const PayoutDisplayDrawnNumbers = ({ roundNumber }) => {
     }
 
     const { isFetching, isLoading } = useContractRead({
-        ...LuckySixContract,
+        address: contractAddress,
+        abi: LuckySixABI,
         functionName: 'unpackResultForRound',
         args: [`${roundNumber}`],
         onSuccess(data) {
@@ -457,6 +457,8 @@ export const PayoutDisplayDrawnNumbers = ({ roundNumber }) => {
 export const PayoutRedeem = ({ roundNumber }) => {
 
     const { address, isConnected } = useAccount();
+    const { chain } = useNetwork();
+    const contractAddress = getContractAddress(chain);
 
     const [indexOfTicket, setIndexOfTicket] = useState(0);
 
@@ -503,7 +505,8 @@ export const PayoutRedeem = ({ roundNumber }) => {
      *      wallet is connected.
      */
     useContractRead({
-        ...LuckySixContract,
+        address: contractAddress,
+        abi: LuckySixABI,
         functionName: isConnected ? 'getTicketsForRound' : '',
         args: [`${roundNumber}`],
         onSuccess(data) {
@@ -519,7 +522,8 @@ export const PayoutRedeem = ({ roundNumber }) => {
      * @dev This hook is designed to invoke the `getPayoutForTicket` function from the connected address.
      */
     const { config, isError, isLoading, isFetching } = usePrepareContractWrite({
-        ...LuckySixContract,
+        address: contractAddress,
+        abi: LuckySixABI,
         functionName: 'getPayoutForTicket',
         args: [roundNumber, indexOfTicket],
         enabled: true,
@@ -588,29 +592,5 @@ export const PayoutRedeem = ({ roundNumber }) => {
                 }}
             />
         </Box>
-    )
-}
-
-
-export const Test = () => {
-
-    const { chain } = useNetwork();
-
-    useContractRead({
-        address: chain !== undefined ? Contracts(chain.id).address : '',
-        abi: LuckySixABI,
-        functionName: 'roundInfo',
-        onSuccess(data) {
-            console.log(data)
-        },
-        onError(error) {
-            console.log('Error fetching tickets', error);
-        },
-    });
-
-    return (
-        <div>
-            AA {chain !== undefined ? chain.name : ''}
-        </div>
     )
 }

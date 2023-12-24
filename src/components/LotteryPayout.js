@@ -9,7 +9,7 @@ import {
 
 export const LotteryPayout = () => {
 
-    const [roundNumber, setRoundNumber] = useState(0);  //TODO
+    const [roundNumber, setRoundNumber] = useState('');
 
     return (
         <Box sx={bodyContainerStyle}>

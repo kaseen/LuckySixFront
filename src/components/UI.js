@@ -17,19 +17,15 @@ import { formatUnits, parseUnits } from 'viem';
 import LuckySixABI from '../abi.json';
 import { Contracts } from '../dependencies/contracts'
 
-// TODO
-const currency = 'ETH'
-
 /**
- * @dev This function, given the `chain` as an argument, returns the lottery address if the lottery exists
- *      on that chain.
+ * @dev This function, given the `chain` as an argument, returns the lottery info on that chain.
  */
-const getContractAddress = (chain) => {
+const getContractInfo = (chain) => {
     if(chain === undefined)
         return ''
     if(Contracts(chain.id) === undefined)
         return ''
-    return Contracts(chain.id).address;
+    return Contracts(chain.id);
 }
 
 /**
@@ -80,7 +76,7 @@ export const bodyContainerStyle = () => {
 export const EntryDisplayInfo = () => {
 
     const { chain } = useNetwork();
-    const contractAddress = getContractAddress(chain);
+    const contractInfo = getContractInfo(chain);
 
     const [platfromFee, setPlatfromFee] = useState();
     const [numberOfRound, setNumberOfRound] = useState();
@@ -104,22 +100,22 @@ export const EntryDisplayInfo = () => {
     useContractReads({
         contracts: [
             {
-                address: contractAddress,
+                address: contractInfo.address,
                 abi: LuckySixABI,
                 functionName: 'platformFee',        // Index 0
             },
             {
-                address: contractAddress,
+                address: contractInfo.address,
                 abi: LuckySixABI,
                 functionName: 'roundDuration',      // Index 1
             },
             {
-                address: contractAddress,
+                address: contractInfo.address,
                 abi: LuckySixABI,
                 functionName: 'roundInfo',          // Index 2
             },
             {
-                address: contractAddress,
+                address: contractInfo.address,
                 abi: LuckySixABI,
                 functionName: 'lotteryState',       // Index 3
             }
@@ -198,7 +194,7 @@ export const EntryDisplayInfo = () => {
     return (
         <Box sx={boxStyle}>
             <Box sx={miniBoxStyle}>
-                <Box>Platform fee: {showInfoOrProgress(platfromFee, `${platfromFee} ${currency}`)}</Box>
+                <Box>Platform fee: {showInfoOrProgress(platfromFee, `${platfromFee} ${contractInfo.currency}`)}</Box>
                 <Box>Round Number: {showInfoOrProgress(numberOfRound, `${numberOfRound}`)}</Box>
             </Box>
 
@@ -271,10 +267,10 @@ export const EntryEtherField = ({ function: setAmountToPlay }) => {
 export const EntryPlayLottery = ({ combination, amountToPlay }) => {
 
     const { chain } = useNetwork();
-    const contractAddress = getContractAddress(chain);
+    const contractInfo = getContractInfo(chain);
 
     const { config, error, isError } = usePrepareContractWrite({
-        address: contractAddress,
+        address: contractInfo.address,
         abi: LuckySixABI,
         functionName: 'playTicket',
         args: [combination],
@@ -369,8 +365,12 @@ export const PayoutSelectRound = ({ function: setRoundNumber, value: roundNumber
                 <Button
                     sx={miniButtonStyle}
                     onClick={() =>{
-                        const x = Number(roundNumber) + 1;
-                        setRoundNumber(x);
+                        if(roundNumber !== ''){
+                            const x = Number(roundNumber) + 1;
+                            setRoundNumber(x);
+                        }
+                        else
+                            setRoundNumber(0);
                     }}
                 >{'▲'}</Button>
                 <Button
@@ -393,21 +393,32 @@ export const PayoutSelectRound = ({ function: setRoundNumber, value: roundNumber
 export const PayoutDisplayDrawnNumbers = ({ roundNumber }) => {
 
     const { chain } = useNetwork();
-    const contractAddress = getContractAddress(chain);
+    const contractInfo = getContractInfo(chain);
+    const emptyCells = Array(35).fill('');
 
-    const [numbersDrawn, _setNumbersDrawn] = useState([]);
+    const [numbersDrawn, _setNumbersDrawn] = useState(emptyCells);
 
     const setNumbersDrawn = (array) => {
-        const result = []
+        // If the numbers for the specified round are not drawn, populate the cells with empty values.
+        if(formatUnits(array[0], -1) === '0'){
+            _setNumbersDrawn(emptyCells);
+            return;
+        }
+
+        const drawnNumbers = [];
 
         for(const x of array)
-            result.push(formatUnits(x, -1));
+            drawnNumbers.push(formatUnits(x, -1));
 
-        _setNumbersDrawn(result);
+        _setNumbersDrawn(drawnNumbers);
     }
 
+    /**
+     * @dev This hook fetches the drawn numbers for the specified `roundNumber`, and it is activated when
+     *      when the provided `roundNumber` is defined.
+     */
     const { isFetching, isLoading } = useContractRead({
-        address: contractAddress,
+        address: contractInfo.address,
         abi: LuckySixABI,
         functionName: 'unpackResultForRound',
         args: [`${roundNumber}`],
@@ -417,7 +428,7 @@ export const PayoutDisplayDrawnNumbers = ({ roundNumber }) => {
         onError(error) {
             console.log('Error fetching drawn numbers', error);
         },
-        //enabled: typeof roundNumber !== 'undefined'
+        enabled: roundNumber !== ''
     });
 
     return (
@@ -438,7 +449,7 @@ export const PayoutDisplayDrawnNumbers = ({ roundNumber }) => {
                                 WebkitTextFillColor: 'black',
                             }
                         }}
-                        value={`${numbersDrawn[i]}`}    // TODO
+                        value={`${numbersDrawn[i]}`}
                         size='small'
                         variant='standard'
                         disabled={true}
@@ -458,9 +469,9 @@ export const PayoutRedeem = ({ roundNumber }) => {
 
     const { address, isConnected } = useAccount();
     const { chain } = useNetwork();
-    const contractAddress = getContractAddress(chain);
+    const contractInfo = getContractInfo(chain);
 
-    const [indexOfTicket, setIndexOfTicket] = useState(0);
+    const [indexOfTicket, setIndexOfTicket] = useState('');
 
     const [ticketsList, _setTicketsList] = useState([
         { id: 0, bet: '', combination: '', redeemed: '' },
@@ -485,7 +496,7 @@ export const PayoutRedeem = ({ roundNumber }) => {
 
             result.push({
                 id: index, 
-                bet: `${formatUnits(ticket.bet, 18)} ${currency}`,
+                bet: `${formatUnits(ticket.bet, 18)} ${contractInfo.currency}`,
                 combination: '[' + combination.toString() + ']',
                 redeemed: ticket.redeemed
             })
@@ -505,7 +516,7 @@ export const PayoutRedeem = ({ roundNumber }) => {
      *      wallet is connected.
      */
     useContractRead({
-        address: contractAddress,
+        address: contractInfo.address,
         abi: LuckySixABI,
         functionName: isConnected ? 'getTicketsForRound' : '',
         args: [`${roundNumber}`],
@@ -515,18 +526,19 @@ export const PayoutRedeem = ({ roundNumber }) => {
         onError(error) {
             console.log('Error fetching tickets', error);
         },
-        account: address
+        account: address,
+        enabled: roundNumber !== ''
     });
 
     /**
      * @dev This hook is designed to invoke the `getPayoutForTicket` function from the connected address.
      */
     const { config, isError, isLoading, isFetching } = usePrepareContractWrite({
-        address: contractAddress,
+        address: contractInfo.address,
         abi: LuckySixABI,
         functionName: 'getPayoutForTicket',
-        args: [roundNumber, indexOfTicket],
-        enabled: true,
+        args: [roundNumber, indexOfTicket !== undefined ? indexOfTicket : 0],
+        enabled: roundNumber !== '' && indexOfTicket !== '',
         account: address
     });
     const { write } = useContractWrite(config);

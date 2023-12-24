@@ -538,7 +538,7 @@ export const PayoutRedeem = ({ roundNumber }) => {
     }
 
     const returnItalicBox = (text) => {
-        return <Box sx={{ fontStyle: 'italic' }}>{text}</Box>
+        return <Box sx={{ fontStyle: 'italic', color: 'white' }}>{text}</Box>
     }
 
     const commonProperties = { sortable: false, flex: 1, headerAlign: 'center', align: 'center' };
@@ -546,12 +546,15 @@ export const PayoutRedeem = ({ roundNumber }) => {
         { ...commonProperties, field: 'id', headerName: 'TicketID', maxWidth: 75 },
         { ...commonProperties, field: 'combination', headerName: 'Combination' },
         { ...commonProperties, field: 'bet', headerName: 'Bet' },
-        { ...commonProperties, field: 'redeem', headerName: 'Redeem', 
+        { ...commonProperties, field: 'redeem', headerName: '', 
             renderCell: (params) => {
                 const row = params.row;
 
                 // Return if the row is empty
                 if(row.bet === '') return;
+
+                // Return if the row is not selected
+                if(indexOfTicket !== row.id) return;
 
                 // Display a `CircularProgress` component if the ticket status is loading
                 if(isLoading || isFetching) return <CircularProgress size='16px' sx={{ color: 'black' }}/>;
@@ -560,7 +563,7 @@ export const PayoutRedeem = ({ roundNumber }) => {
                 if(row.redeemed === true) return returnItalicBox('redeemed');
 
                 // Display `not redeemable` if the ticket cannot be redeemed
-                if(isError === true) return returnItalicBox('not redeemable')
+                if(isError === true) return returnItalicBox('not redeemable');
 
                 const handleRedeem = () => {
                     if(isError)
@@ -582,12 +585,20 @@ export const PayoutRedeem = ({ roundNumber }) => {
                 rowHeight={28}
                 disableColumnMenu
                 hideFooter={true}
-                rowCount={columns.length}
+                count={ticketsList.length}
                 onRowClick={handleRowClick}
+                
                 sx={{
                     '&.MuiDataGrid-root .MuiDataGrid-cell:focus-within': {
                         outline: 'none !important'
                     },
+                    '&.MuiDataGrid-root .Mui-selected': {
+                        background: 'linear-gradient(300deg, #020024 0%, #090979 10%, #00d4ff 100%) !important',
+                    },
+                    '&.MuiDataGrid-root': {
+                        border: '3px solid black'
+                    },
+                    maxHeight: 200,
                     marginTop: '5px'
                 }}
             />

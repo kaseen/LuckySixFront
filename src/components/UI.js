@@ -171,13 +171,6 @@ export const EntryDisplayInfo = () => {
         return parentStyle;
     }
 
-    const miniBoxStyle = () => {
-        return {
-            width: '50%',
-            paddingBottom: '8px'
-        }
-    }
-
     const showInfoOrProgress = (variable, textOnSuccess) => {
         return typeof variable !== 'undefined' ? textOnSuccess : <CircularProgress size='16px' sx={{ color: 'black' }}/>
     }
@@ -197,12 +190,12 @@ export const EntryDisplayInfo = () => {
 
     return (
         <Box sx={boxStyle}>
-            <Box sx={miniBoxStyle}>
+            <Box sx={{ width: '50%' }}>
                 <Box>Platform fee: {showInfoOrProgress(platfromFee, `${platfromFee} ${contractInfo.currency}`)}</Box>
                 <Box>Round Number: {showInfoOrProgress(numberOfRound, `${numberOfRound}`)}</Box>
             </Box>
 
-            <Box sx={miniBoxStyle}>
+            <Box sx={{ width: '50%' }}>
                 <Box>Lottery State: {showInfoOrProgress(lotteryState, `${LOTTERY_STATE[lotteryState]}`)}</Box>
                 <Box>Round ends: {showInfoOrProgress(lotteryState, 
                     LOTTERY_STATE[lotteryState] === 'Started' ? `${dateStarted}` : ''
@@ -227,7 +220,6 @@ export const EntryInputNumbers = ({ function: setCombination }) => {
                     onChange={(v) => setCombination(i, v.target.value)}
                     inputProps={{ min: 0, style: { textAlign: 'center' } }}
                     sx={{
-                        marginTop: '15px',
                         width: 60,
                         height: 56,
                         marginLeft: '5px',
@@ -254,7 +246,7 @@ export const EntryEtherField = ({ function: setAmountToPlay }) => {
             sx={{
                 border: '2px solid black',
                 borderRadius: '10px',
-                marginTop: '15px'
+                //marginTop: '15px'
             }}
             helperText='value you want to play (fees included)'
             //placeholder='0.02'

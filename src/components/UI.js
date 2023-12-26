@@ -30,20 +30,24 @@ const getContractInfo = (chain) => {
 
 /**
  * @dev The styling for the primary component, which is revealed through routing, centers the component in
- *      the middle of the screen. The margins on the sides are precisely calculated as (100% - width)/2.
+ *      the middle of the screen. The margins on the sides are precisely calculated as (window.innerWidth - width)/2.
  */
+const drawnNumbersWidth = 180;
+const ticketsWidth = 450;
+const ticketsHeight = 260;
+
 export const bodyContainerStyle = () => {
 
-    const width = '32%';
-    const height = '42%';
+    const width = drawnNumbersWidth + ticketsWidth;
+    const height = ticketsHeight + 90;
     const padding = '10px';
-    const sides = `${(100 - width.match(/\d+/g))/2}%`
+    const sides = `${(window.innerWidth - width)/2}px`
 
     return {
-        minWidth: width,
-        maxWidth: width,
-        minHeight: height,
-        maxHeight: height,
+        minWidth: `${width}px`,
+        maxWidth: `${width}px`,
+        minHeight: `${height}px`,
+        maxHeight: `${height}px`,
         padding: padding,
         left: sides,
         right: sides,
@@ -440,12 +444,16 @@ export const PayoutDisplayDrawnNumbers = ({ roundNumber }) => {
      *      the formula `numbersDrawn[row * numBoxes + col]`.
      */
     return (
-        <Box>
+        <Box sx={{
+            minWidth: `${drawnNumbersWidth}px`,
+            maxWidth: `${drawnNumbersWidth}px`,
+            marginTop: '5px'
+        }}>
             Drawn numbers: {(isFetching || isLoading) && <CircularProgress size='16px' sx={{ color: 'black' }}/>}
             <section>
                 {
                 Array.from({ length: numRows }).map((_, row) => (
-                    <Box key={row}>
+                    <Box key={row} sx={{marginTop: '5px'}}>
                         {Array.from({ length: numBoxes }).map((_, col) => (
                         <TextField
                             key={`${row}-${col}`}
@@ -454,9 +462,9 @@ export const PayoutDisplayDrawnNumbers = ({ roundNumber }) => {
                                 width: 29,
                                 border: '2px solid black',
                                 borderRadius: '10px',
-                                '&.MuiInputBase-input.Mui-disabled': {
+                                '& .MuiInputBase-input.Mui-disabled': {
                                     WebkitTextFillColor: 'black',
-                                }
+                                },
                             }}
                             value={`${numbersDrawn[row * numBoxes + col]}`}
                             size='small'
@@ -489,7 +497,9 @@ export const PayoutRedeem = ({ roundNumber }) => {
         { id: 1, bet: '', combination: '', redeemed: '' },
         { id: 2, bet: '', combination: '', redeemed: '' },
         { id: 3, bet: '', combination: '', redeemed: '' },
-        { id: 4, bet: '', combination: '', redeemed: '' }
+        { id: 4, bet: '', combination: '', redeemed: '' },
+        { id: 5, bet: '', combination: '', redeemed: '' },
+        { id: 6, bet: '', combination: '', redeemed: '' }
     ]); // TODO: Remove
 
     /**
@@ -517,7 +527,7 @@ export const PayoutRedeem = ({ roundNumber }) => {
         }
 
         // TODO: Remove
-        while(result.length < 5){
+        while(result.length < 7){
             result.push({ id: result.length, bet: '', combination: '', redeemed: '' })
         }
 
@@ -563,10 +573,10 @@ export const PayoutRedeem = ({ roundNumber }) => {
 
     const commonProperties = { sortable: false, flex: 1, headerAlign: 'center', align: 'center' };
     const columns = [
-        { ...commonProperties, field: 'id', headerName: 'TicketID', maxWidth: 75 },
-        { ...commonProperties, field: 'combination', headerName: 'Combination' },
+        { ...commonProperties, field: 'id', headerName: 'ID', maxWidth: 40 },
+        { ...commonProperties, field: 'combination', headerName: 'Combination', minWidth: 140 },
         { ...commonProperties, field: 'bet', headerName: 'Bet' },
-        { ...commonProperties, field: 'redeem', headerName: '', 
+        { ...commonProperties, field: 'redeem', headerName: '', maxWidth: 110, 
             renderCell: (params) => {
                 const row = params.row;
 
@@ -597,8 +607,13 @@ export const PayoutRedeem = ({ roundNumber }) => {
     ]
 
     return (
-        <Box sx={{ width: '100%', marginTop: '5px' }}>
-            Your Tickets:
+        <Box sx={{
+            minWidth: `${ticketsWidth}px`,
+            maxWidth: `${ticketsWidth}px`,
+            height: `${ticketsHeight}px`,
+            marginTop: '5px'
+        }}>
+            Ticket details, click to reveal:
             <DataGrid
                 rows={ticketsList}
                 columns={columns}
@@ -607,7 +622,6 @@ export const PayoutRedeem = ({ roundNumber }) => {
                 hideFooter={true}
                 count={ticketsList.length}
                 onRowClick={dataRow => setIndexOfTicket(dataRow.row.id)}
-                
                 sx={{
                     '&.MuiDataGrid-root .MuiDataGrid-cell:focus-within': {
                         outline: 'none !important'
@@ -618,7 +632,6 @@ export const PayoutRedeem = ({ roundNumber }) => {
                     '&.MuiDataGrid-root': {
                         border: '3px solid black'
                     },
-                    maxHeight: 200,
                     marginTop: '5px'
                 }}
             />

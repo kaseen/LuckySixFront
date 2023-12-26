@@ -14,8 +14,10 @@ export const LotteryPayout = () => {
     return (
         <Box sx={bodyContainerStyle}>
             <PayoutSelectRound function={setRoundNumber} value={roundNumber}/>
-            <PayoutDisplayDrawnNumbers roundNumber={roundNumber}/>
-            <PayoutRedeem roundNumber={roundNumber}/>
+            <Box sx={{ display: 'flex', width: '100%' }}>
+                <PayoutDisplayDrawnNumbers roundNumber={roundNumber}/>
+                <PayoutRedeem roundNumber={roundNumber}/>
+            </Box>
         </Box>
     )
 }

@@ -431,30 +431,41 @@ export const PayoutDisplayDrawnNumbers = ({ roundNumber }) => {
         enabled: roundNumber !== ''
     });
 
+    const numRows = 7;
+    const numBoxes = 5;
+
+    /**
+     * @dev Produces a matrix of text fields with dimensions `numRows` by `numBoxes`. Each text field is uniquely
+     *      identified with a key in the format `${row}-${col}`, and the value within each box is computed from
+     *      the formula `numbersDrawn[row * numBoxes + col]`.
+     */
     return (
         <Box>
             Drawn numbers: {(isFetching || isLoading) && <CircularProgress size='16px' sx={{ color: 'black' }}/>}
             <section>
                 {
-                    Array.from({ length: 35 },
-                    (_, i) =>
-                    <TextField
-                        key={i}
-                        inputProps={{ style: { textAlign: 'center', color: 'white' } }}
-                        sx={{
-                            width: 29,
-                            border: '2px solid black',
-                            borderRadius: '10px',
-                            '& .MuiInputBase-input.Mui-disabled': {
-                                WebkitTextFillColor: 'black',
-                            }
-                        }}
-                        value={`${numbersDrawn[i]}`}
-                        size='small'
-                        variant='standard'
-                        disabled={true}
-                    />
-                    )
+                Array.from({ length: numRows }).map((_, row) => (
+                    <Box key={row}>
+                        {Array.from({ length: numBoxes }).map((_, col) => (
+                        <TextField
+                            key={`${row}-${col}`}
+                            inputProps={{ style: { textAlign: 'center', color: 'white' } }}
+                            sx={{
+                                width: 29,
+                                border: '2px solid black',
+                                borderRadius: '10px',
+                                '&.MuiInputBase-input.Mui-disabled': {
+                                    WebkitTextFillColor: 'black',
+                                }
+                            }}
+                            value={`${numbersDrawn[row * numBoxes + col]}`}
+                            size='small'
+                            variant='standard'
+                            disabled={true}
+                        />
+                        ))}
+                    </Box>
+                ))
                 }
             </section>
         </Box>

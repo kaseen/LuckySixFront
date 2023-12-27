@@ -386,7 +386,7 @@ export const PayoutSelectRound = ({ function: setRoundNumber, value: roundNumber
  * @dev This component utilizes the `roundNumber` from its parent component, fetches the drawn numbers
  *      for that specific round, and displays them in an array of text fields.
  */
-export const PayoutDisplayDrawnNumbers = ({ roundNumber }) => {
+export const PayoutDisplayDrawnNumbers = ({ roundNumber, ticketInfo }) => {
 
     const { chain } = useNetwork();
     const contractInfo = getContractInfo(chain);
@@ -427,6 +427,19 @@ export const PayoutDisplayDrawnNumbers = ({ roundNumber }) => {
         enabled: roundNumber !== ''
     });
 
+    /**
+     * @dev This function compares each ticket number with the value of the text field specified by the `row` and
+     *      `col`, highlighting it in a different color if there is a match.
+     */
+    const getValue = (row, col) => {
+        if(ticketInfo === undefined)
+            return '';
+        for(let i=0; i<6; i++)
+            if(Number(numbersDrawn[row * numBoxes + col]) === ticketInfo[i])
+                return '#a8e0ff';
+        return '';
+    }
+
     const numRows = 7;
     const numBoxes = 5;
 
@@ -457,6 +470,7 @@ export const PayoutDisplayDrawnNumbers = ({ roundNumber }) => {
                                 '& .MuiInputBase-input.Mui-disabled': {
                                     WebkitTextFillColor: 'black',
                                 },
+                                background: getValue(row, col)
                             }}
                             value={`${numbersDrawn[row * numBoxes + col]}`}
                             size='small'
@@ -476,7 +490,7 @@ export const PayoutDisplayDrawnNumbers = ({ roundNumber }) => {
  * @dev This component retrieves and presents ticket information for the connected user in the specified
  *      `roundNumber` from its parent component, displaying the data in a table format.
  */
-export const PayoutRedeem = ({ roundNumber }) => {
+export const PayoutRedeem = ({ roundNumber, setTicketInfo }) => {
 
     const { address, isConnected } = useAccount();
     const { chain } = useNetwork();
@@ -613,7 +627,13 @@ export const PayoutRedeem = ({ roundNumber }) => {
                 disableColumnMenu
                 hideFooter={true}
                 count={ticketsList.length}
-                onRowClick={dataRow => setIndexOfTicket(dataRow.row.id)}
+                onRowClick={dataRow => {
+                    setIndexOfTicket(dataRow.row.id);
+                    if(dataRow.row.bet !== '')
+                        setTicketInfo(JSON.parse(dataRow.row.combination))
+                    else
+                        setTicketInfo()
+                }}
                 sx={{
                     '&.MuiDataGrid-root .MuiDataGrid-cell:focus-within': {
                         outline: 'none !important'

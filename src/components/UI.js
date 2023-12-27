@@ -572,7 +572,11 @@ export const PayoutRedeem = ({ roundNumber, setTicketInfo, indexOfTicket, setInd
         enabled: roundNumber !== '' && indexOfTicket !== '' && ticketsList[indexOfTicket].id !== '',
         account: address
     });
-    const { write } = useContractWrite(config);
+    const { data, write } = useContractWrite(config);
+    
+    const { isLoading: isLoading2, isSuccess } = useWaitForTransaction({
+        hash: data?.hash
+    });
 
     const returnItalicBox = (text) => {
         return <Box sx={{ fontStyle: 'italic', color: 'white' }}>{text}</Box>
@@ -594,11 +598,11 @@ export const PayoutRedeem = ({ roundNumber, setTicketInfo, indexOfTicket, setInd
                 if(indexOfTicket !== row.id) return;
 
                 // Display a `CircularProgress` component if the ticket status is loading
-                if(isLoading || isFetching) return <CircularProgress size='16px' sx={{ color: 'black' }}/>;
+                if(isLoading || isLoading2 || isFetching) return <CircularProgress size='16px' sx={{ color: 'black' }}/>;
 
                 // Show the message `redeemed` if the ticket has been redeemed
-                if(row.redeemed === true) return returnItalicBox('redeemed');
-
+                if(row.redeemed === true || isSuccess === true) return returnItalicBox('redeemed');
+            
                 // Display `not redeemable` if the ticket cannot be redeemed
                 if(isError === true) return returnItalicBox('not redeemable');
 

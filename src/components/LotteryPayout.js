@@ -11,9 +11,11 @@ export const LotteryPayout = () => {
 
     const [roundNumber, setRoundNumber] = useState('');
     const [ticketInfo, setTicketInfo] = useState();
+    const [indexOfTicket, setIndexOfTicket] = useState('');
 
     useEffect(() => {
         setTicketInfo();
+        setIndexOfTicket('')
     }, [roundNumber]);
 
     return (
@@ -21,7 +23,12 @@ export const LotteryPayout = () => {
             <PayoutSelectRound function={setRoundNumber} value={roundNumber}/>
             <Box sx={{ display: 'flex', width: '100%' }}>
                 <PayoutDisplayDrawnNumbers roundNumber={roundNumber} ticketInfo={ticketInfo}/>
-                <PayoutRedeem roundNumber={roundNumber} setTicketInfo={setTicketInfo}/>
+                <PayoutRedeem
+                    roundNumber={roundNumber}
+                    setTicketInfo={setTicketInfo}
+                    indexOfTicket={indexOfTicket}
+                    setIndexOfTicket={setIndexOfTicket}    
+                />
             </Box>
         </Box>
     )

@@ -490,13 +490,14 @@ export const PayoutDisplayDrawnNumbers = ({ roundNumber, ticketInfo }) => {
  * @dev This component retrieves and presents ticket information for the connected user in the specified
  *      `roundNumber` from its parent component, displaying the data in a table format.
  */
-export const PayoutRedeem = ({ roundNumber, setTicketInfo }) => {
+export const PayoutRedeem = ({ roundNumber, setTicketInfo, indexOfTicket, setIndexOfTicket }) => {
 
     const { address, isConnected } = useAccount();
     const { chain } = useNetwork();
     const contractInfo = getContractInfo(chain);
 
-    const [indexOfTicket, setIndexOfTicket] = useState('');
+    const onClickBackground = indexOfTicket !== '' ? 
+        'linear-gradient(300deg, #020024 0%, #090979 10%, #00d4ff 100%) !important' : '';
 
     const [ticketsList, _setTicketsList] = useState([
         { id: 0, bet: '', combination: '', redeemed: '' },
@@ -639,7 +640,7 @@ export const PayoutRedeem = ({ roundNumber, setTicketInfo }) => {
                         outline: 'none !important'
                     },
                     '&.MuiDataGrid-root .Mui-selected': {
-                        background: 'linear-gradient(300deg, #020024 0%, #090979 10%, #00d4ff 100%) !important',
+                        background: onClickBackground,
                     },
                     '&.MuiDataGrid-root': {
                         border: '3px solid black'

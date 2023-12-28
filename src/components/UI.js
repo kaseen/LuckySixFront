@@ -53,7 +53,7 @@ export const bodyContainerStyle = () => {
         right: sides,
 
         position: 'absolute',
-        marginTop: '120px',
+        marginTop: '40px',
 
         display: 'flex',
         flexDirection: 'column',
@@ -67,6 +67,60 @@ export const bodyContainerStyle = () => {
         fontFamily: 'Ubuntu',
         fontSize: '16px'
     };
+}
+
+// =============================================================
+//                        LOTTERY BALANCE
+// ============================================================= 
+
+export const DisplayLotteryBalance = () => {
+
+    const { chain } = useNetwork();
+    const contractInfo = getContractInfo(chain);
+
+    const [platformBalance, setPlatfromBalance] = useState();
+
+    const { isFetching, isLoading } = useContractRead({
+        address: contractInfo.address,
+        abi: LuckySixABI,
+        functionName: 'platformBalance',
+        onSuccess(data) {
+            setPlatfromBalance(formatUnits(data, 18))
+        },
+        onError(error) {
+            console.log('Error getting platform balance', error);
+        },
+        enabled: chain !== undefined,
+        watch: true
+    });
+
+    const BoxStyled = styled(Box)({
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: '35px',
+        minHeight: '100px',
+        maxHeight: '100px',
+        fontFamily: 'Ubuntu',
+        fontSize: '40px'
+    });
+
+    if(chain === undefined)
+        return <BoxStyled/>
+    else if(Contracts(chain.id) === undefined)
+        return <BoxStyled/>
+
+    return (
+        <BoxStyled>
+            <div>
+                Stand a chance to win up to {
+                isFetching || isLoading ?
+                <CircularProgress size='35px' sx={{ color: 'black' }}/> : `${platformBalance} ${contractInfo.currency}`}
+            </div>
+            <div>based on the current lottery balance</div>
+        </BoxStyled>
+    )
 }
 
 // =============================================================

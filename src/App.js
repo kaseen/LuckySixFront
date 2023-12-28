@@ -1,6 +1,7 @@
 import { useNetwork, useSwitchNetwork } from 'wagmi';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Header } from './components/Header';
+import { DisplayLotteryBalance } from './components/UI'
 import { LotteryEntry } from './components/LotteryEntry';
 import { LotteryPayout } from './components/LotteryPayout';
 import { useEffect, useState } from 'react';
@@ -35,6 +36,7 @@ function App() {
         <>
             <BrowserRouter>
                 <Header/>
+                <DisplayLotteryBalance/>
                 <Routes>
                     <Route path='/' element={<LotteryEntry/>}/>
                     <Route path='/payout' element={<LotteryPayout/>}/>
